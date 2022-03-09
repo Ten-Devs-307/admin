@@ -132,6 +132,7 @@ dmypy.json
 **/local_settings.py
 .vscode/
 virtualenv/**
+virtual/
 localvirtualenv/**
 **/settings/prod.py
 uploads
