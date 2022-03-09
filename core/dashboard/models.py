@@ -4,7 +4,8 @@ from accounts.models import Account
 
 
 class Service(models.Model):
-    customer = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True. retate_name='customer')
+    customer = models.ForeignKey(
+        Account, on_delete=models.SET_NULL, null=True, related_name='customer')
     labourer = models.ForeignKey(
         Account, on_delete=models.SET_NULL, null=True, related_name='labourer')
     service_name = models.CharField(max_length=200)
