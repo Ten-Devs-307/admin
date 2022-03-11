@@ -33,3 +33,17 @@ class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Service
         fields = "__all__"
+
+
+class SignUpSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Account
+        fields = ('email', 'name', 'password')
+
+    def create(self, validated_data):
+        try:
+            obj = Account.objects.create(**validated_data)
+            return obj
+        except:
+            return Response(serializer.errors, status=status.HTTP_202_ACCEPTED)
+
