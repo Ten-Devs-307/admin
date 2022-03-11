@@ -30,6 +30,8 @@ INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
     'api.apps.ApiConfig',
     'dashboard.apps.DashboardConfig',
+
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -119,3 +121,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CUSTOM AUTHENTICATION MODEL
 # https://docs.djangoproject.com/en/4.0/topics/auth/customizing/#specifying-a-custom-user-model
 AUTH_USER_MODEL = 'accounts.Account'
+
+
+# REST_FRAMEWORK = {
+#     'DEFAULT_PERMISSION_CLASSES': [
+#         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+#     ]
+# }
