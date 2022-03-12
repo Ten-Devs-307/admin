@@ -10,7 +10,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
     '''
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255, null=True)
-
+    phone = models.CharField(max_length=255, null=True)
     photo = models.ImageField(upload_to='profile_pics', blank=True)
 
     is_active = models.BooleanField(default=True)

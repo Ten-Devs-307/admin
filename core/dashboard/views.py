@@ -7,32 +7,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 
 
-class LoginView(View):
-    template_name = 'dashboard/login.html'
-
-    def get(self, request, *args, **kwargs):
-        context = {}
-        return render(request, self.template_name, context)
-
-    def post(self, request, *args, **kwargs):
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-
-        user = authenticate(request, email=email, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('dashboard:dashboard')
-        else:
-            messages.error(request, 'Invalid email or password')
-            return redirect('dashboard:login')
-
-
-class LogoutView(View):
-    def get(self, request, *args, **kwargs):
-        logout(request)
-        return redirect('dashboard:login')
-
-
 class DashboardView(View):
     template_name = 'dashboard/dashboard.html'
 
