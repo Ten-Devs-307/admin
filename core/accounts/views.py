@@ -16,7 +16,6 @@ class LoginView(View):
     def post(self, request, *args, **kwargs):
         email = request.POST.get('email')
         password = request.POST.get('password')
-
         user = authenticate(request, email=email, password=password)
         if user is not None:
             login(request, user)
@@ -47,8 +46,7 @@ class SignUpView(View):
             user.set_password(password)
             user.save()
             # login(request, user)
-            return redirect(
-                request.META.get("HTTP_REFERER"))
+            return redirect("accounts:login")
         else:
             messages.error(request, "Invalid form")
             return redirect(
