@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=0'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="Description" content="">
+    <meta name="Author" content="">
+    <meta name="Keywords" content="" />
+
+    <!-- Title -->
+    <title> Render | {% block pagetitle %} {% endblock %}</title>
+
+    <!-- django static files -->
+    {% load static %}
+
+    <!--- Favicon --->
+    <link rel="icon" href="{% static 'assets/img/brand/payhublogodark.png' %}" type="image/x-icon" />
+
+    <!--- Icons css --->
+    <link href="{% static 'assets/css/icons.css' %}" rel="stylesheet">
+
+    <!-- Bootstrap css -->
+    <link href="{% static 'assets/plugins/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!--- Right-sidemenu css --->
+    <link href="{% static 'assets/plugins/sidebar/sidebar.css' %}" rel="stylesheet">
+
+    <!--- Custom Scroll bar --->
+    <link href="{% static 'assets/plugins/mscrollbar/jquery.mCustomScrollbar.css' %}" rel="stylesheet" />
+
+    <!--- Style css --->
+    <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/css/boxed.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/css/dark-boxed.css' %}" rel="stylesheet">
+
+    <!--- Skinmodes css --->
+    <link href="{% static 'assets/css/skin-modes.css' %}" rel="stylesheet">
+
+    <!--- Darktheme css --->
+    <link href="{% static 'assets/css/style-dark.css' %}" rel="stylesheet">
+
+    <!--- Animations css --->
+    <link href="{% static 'assets/css/animate.css' %}" rel="stylesheet">
+
+</head>
+
+<body class="error-page1 main-body">
+
+    <!-- Page -->
+    <div class="page">
+
+        <div class="container-fluid">
+            <div class="row no-gutter py-5">
+                <!-- The content half -->
+                <div class="col-md-6 col-lg-6 col-xl-5 bg-white mx-auto">
+                    <div class="login d-flex align-items-center">
+                        <!-- Demo content-->
+                        <div class="container p-0 py-5">
+                            <div class="row">
+                                <div class="col-md-10 col-lg-10 col-xl-9 mx-auto">
+                                    <div class="card-sigin">
+                                        <div class="mb-3 d-flex mt-2>
+                                            <a href=""><img src=" {% static 'assets/img/brand/payhublogodark.png' %}"
+                                            class="sign-favicon-a ht-30" alt="logo">
+                                            <img src="{% static 'assets/img/brand/payhublogodark.png' %}"
+                                                class="sign-favicon-b ht-30" alt="logo">
+                                            </a>
+                                            <h1 class="main-logo1 ms-1 me-0 my-auto tx-28">Render<span></span> {10Devs}
+                                            </h1>
+                                        </div>
+
+                                        <!-- NOTE: BLOCK CONTENT GOES HERE -->
+                                        {% block content %}
+
+                                        {% endblock %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- End -->
+                    </div>
+                </div><!-- End -->
+            </div>
+        </div>
+
+    </div>
+    <!-- End Page -->
+
+    <!--- JQuery min js --->
+    <script src="{% static 'assets/plugins/jquery/jquery.min.js' %}"></script>
+
+    <!--- Bootstrap Bundle js --->
+    <script src="{% static 'assets/plugins/bootstrap/js/popper.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/bootstrap/js/bootstrap.bundle.min.js' %}">
+    </script>
+
+    <!--- Ionicons js --->
+    <script src="{% static 'assets/plugins/ionicons/ionicons.js' %}"></script>
+
+    <!--- JQuery sparkline js --->
+    <script src="{% static 'assets/plugins/jquery-sparkline/jquery.sparkline.min.js' %}">
+    </script>
+
+
+    <!--- Moment js --->
+    <script src="{% static 'assets/plugins/moment/moment.js' %}"></script>
+
+    <!-- P-scroll js -->
+    <script src="{% static 'assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js' %}">
+    </script>
+
+    <!--- Eva-icons js --->
+    <script src="{% static 'assets/js/eva-icons.min.js' %}"></script>
+
+    <!--- Rating js --->
+    <script src="{% static 'assets/plugins/rating/jquery.rating-stars.js' %}"></script>
+    <script src="{% static 'assets/plugins/rating/jquery.barrating.js' %}"></script>
+
+    <!--- Custom js --->
+    <script src="{% static 'assets/js/custom.js' %}"></script>
+
+</body>
+
+</html>

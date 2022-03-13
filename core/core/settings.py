@@ -1,4 +1,5 @@
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -30,6 +31,8 @@ INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
     'api.apps.ApiConfig',
     'dashboard.apps.DashboardConfig',
+
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -110,6 +113,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
@@ -119,3 +125,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CUSTOM AUTHENTICATION MODEL
 # https://docs.djangoproject.com/en/4.0/topics/auth/customizing/#specifying-a-custom-user-model
 AUTH_USER_MODEL = 'accounts.Account'
+
+
+# REST_FRAMEWORK = {
+#     'DEFAULT_PERMISSION_CLASSES': [
+#         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+#     ]
+# }
