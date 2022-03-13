@@ -1,0 +1,42 @@
+{% extends 'accounts/base.html' %}
+{% block pagetitle %} Login {% endblock %}
+{% load static %}
+{% block content %}
+<!-- NOTE STARTS -->
+<div class="card-sigin">
+    <div class="main-signup-header">
+        <!-- message -->
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            {{message}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        <h2>Welcome back!</h2>
+        <h5 class="fw-semibold mb-4">Please Login to continue.</h5>
+        <form action="{% url 'accounts:login' %}" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input class="form-control" id="username" name="username" placeholder="Enter username" type="text"
+                    value="{{username}}" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input class="form-control" id="password" name="password" placeholder="Enter your password"
+                    type="password" required>
+            </div>
+            <button class="btn btn-main-primary btn-block" type="submit">Login</button>
+
+        </form>
+        <div class="main-signin-footer mt-5">
+            <p>Forgot Password? <a href="{% url 'accounts:sign_up' %}">Send To Mail</a></p>
+        </div>
+    </div>
+</div>
+<!-- NOTE ENDS -->
+{% endblock %}

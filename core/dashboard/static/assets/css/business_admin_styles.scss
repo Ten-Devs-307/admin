@@ -1,0 +1,35 @@
+.alert-container {
+  position: fixed;
+  top: 0.1em;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  transition: 0.2s all ease-in-out;
+
+  &.hide {
+    display: none;
+  }
+
+  .close-btn {
+    position: absolute;
+    right: 0;
+    cursor: pointer;
+    box-shadow: 0 0 2px grey;
+    height: 2em;
+    width: 2em;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    top: 0;
+    padding: 0.2em;
+    border-radius: 100%;
+    background-color: white;
+    color: red;
+    transition: 0.1s all ease-in-out;
+
+    &:hover {
+      background-color: #fd3c3ca6;
+      color: white;
+    }
+  }
+}
