@@ -89,3 +89,15 @@ class TestSignUP(TestCase):
         data = {"name": "test", "email": "test@gmail.com", "password": "test"}
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
+
+    def test_signup_no_password(self):
+        url = reverse('api:sign_up')
+        data = {"name": "test", "email": "test@gmail.com"}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, HTTPStatus.PARTIAL_CONTENT)
+
+    def test_signup_no_email(self):
+        url = reverse('api:sign_up')
+        data = {"name": "test", "password": "password"}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, HTTPStatus.PARTIAL_CONTENT)
