@@ -75,3 +75,17 @@ class TestWallet(TestCase):
         url = reverse('api:wallet', args=(1,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, HTTPStatus.OK)
+
+
+class TestSignUP(TestCase):
+
+    def test_signup_returns_for_get(self):
+        url = reverse('api:sign_up')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_signup_returns_for_post(self):
+        url = reverse('api:sign_up')
+        data = {"name": "test", "email": "test@gmail.com", "password": "test"}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, HTTPStatus.CREATED)
