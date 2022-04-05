@@ -49,6 +49,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
     <!-- Custom styles for business admin dasbhoard -->
     <link href="{% static 'assets/css/business_admin_styles.css' %}" rel="stylesheet" />
+    <!-- datatabls -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/autofill/2.3.9/css/autoFill.dataTables.min.css">
+
 
 </head>
 
@@ -330,8 +333,8 @@
                     <nav class="horizontalMenu clearfix">
                         <ul class="horizontalMenu-list">
                             <!-- dashboard tab starts -->
-                            <li aria-haspopup="true"><a href="" class=""><svg xmlns="http://www.w3.org/2000/svg"
-                                        class="side-menu__icon" viewBox="0 0 24 24">
+                            <li aria-haspopup="true"><a href="{% url 'dashboard:dashboard' %}" class=""><svg
+                                        xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" viewBox="0 0 24 24">
                                         <path d="M0 0h24v24H0V0z" fill="none" />
                                         <path d="M5 5h4v6H5zm10 8h4v6h-4zM5 17h4v2H5zM15 5h4v2h-4z" opacity=".3" />
                                         <path
@@ -350,13 +353,15 @@
                             </li>
                             <!-- video tab ends -->
 
-                            <li aria-haspopup="true"><a href="#" class="sub-icon">
+                            <li aria-haspopup="true"><a href="javascript:void(0)" class="sub-icon">
                                     <i class="fa fa-list-alt"></i> Transactions<i
                                         class="fe fe-chevron-down horizontal-icon"></i></a>
                                 <ul class="sub-menu">
-                                    <li aria-haspopup="true"><a href="}" class="slide-item">Transactions</a>
+                                    <li aria-haspopup="true"><a href="{% url 'dashboard:transactions' %}"
+                                            class="slide-item">Transactions</a>
                                     </li>
-                                    <li aria-haspopup="true"><a href="" class="slide-item">Make Payment</a></li>
+                                    <li aria-haspopup="true"><a href="{% url 'dashboard:make_payment' %}"
+                                            class="slide-item">Make Payment</a></li>
                                 </ul>
                             </li>
                             <li aria-haspopup="true"><a href="#" class="sub-icon">
@@ -479,6 +484,9 @@
 
     <!-- Custom script for business admin dasbhoard -->
     <script src="{% static 'assets/js/utility_functions.js' %}"></script>
+
+    <!-- data tables -->
+    <script src="https://cdn.datatables.net/autofill/2.3.9/js/dataTables.autoFill.min.js"></script>
 
 </body>
 
