@@ -1,5 +1,9 @@
 
+import environ
 from pathlib import Path
+
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -9,7 +13,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-c_*fgm-u^leu^)2&buw$ovb6uh_cq*_l+4b#3#!lv2#!d@h^an'
+# SECRET_KEY = 'django-insecure-c_*fgm-u^leu^)2&buw$ovb6uh_cq*_l+4b#3#!lv2#!d@h^an'
+SECRET_KEY = env('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -122,6 +127,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # https://docs.djangoproject.com/en/4.0/topics/auth/customizing/#specifying-a-custom-user-model
 AUTH_USER_MODEL = 'accounts.Account'
 
+
+PAYHUB_SECRET_TOKEN = env('PAYHUB_SECRET_TOKEN')
+WALLET_ID = env('WALLET_ID')
 
 # REST_FRAMEWORK = {
 #     'DEFAULT_PERMISSION_CLASSES': [
