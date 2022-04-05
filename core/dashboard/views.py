@@ -1,7 +1,13 @@
+from django.http import HttpResponseRedirect
+import time
+from django.db.models import Q
 from datetime import datetime, timedelta
 from django.shortcuts import render, redirect
 from django.views import View
 from django.utils.decorators import method_decorator
+
+from core import settings
+from core.util.util_functions import get_transaction_status, make_payment
 from .models import Product, Service, Transaction, Wallet
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -35,3 +41,74 @@ class DashboardView(View):
             'num_of_transactions_this_month': num_of_transactions_this_month,
         }
         return render(request, self.template_name, context)
+
+
+class TransactionListView(View):
+    template_name = 'dashboard/transactions.html'
+
+    def get(self, request, *args, **kwargs):
+        query = request.GET.get('q')
+        if query:
+            transactions = Transaction.objects.filter(
+                Q(transaction_id__icontains=query) | Q(customer__name__icontains=query) | Q(labourer__name__icontains=query) | Q(
+                    service__icontains=query) | Q(wallet__wallet_id__icontains=query) | Q(payment_mode__icontains=query)
+            )
+        else:
+            transactions = Transaction.objects.all().order_by('-id')
+        context = {'transactions': transactions}
+        return render(request, self.template_name, context)
+
+
+class MakePaymentView(View):
+    template_name = 'dashboard/make_payment.html'
+
+    def generate_transaction_id(self):
+        return int(round(time.time() * 1000))
+
+    # @method_decorator(ApplicantsOnly)
+    def get(self, request, *args, **kwargs):
+        context = {}
+        return render(request, self.template_name, context)
+
+    # @method_decorator(ApplicantsOnly)
+    def post(self, request, *args, **kwargs):
+        print('the payment is being processed')
+        user = request.user
+        phone = request.POST.get('phone')
+        amount = request.POST.get('amount')
+        network = request.POST.get('network')
+        note = request.POST.get('note')
+        transaction_id = self.generate_transaction_id()
+
+        data = {
+            'transaction_id': transaction_id,
+            'mobile_number': phone,
+            'amount': amount,
+            'wallet_id': settings.WALLET_ID,
+            'network_code': network,
+            'note': note,
+        }
+        response = make_payment(data)
+        # wait for 30 seconds for transaction to be processed
+        for i in range(3):
+            time.sleep(10)
+            transaction_status = get_transaction_status(transaction_id)
+            if transaction_status['success'] == True:
+                print('the transaction was successful')
+                # user.has_paid = True
+                break
+
+        transaction = {
+            'transaction_id': transaction_id,
+            'amount': amount,
+            'from_phone': phone,
+            'network': network,
+            'note': note,
+            'payment_status_code': transaction_status['status_code'],
+            'payment_status': transaction_status['message'],
+            'customer': user,
+            'labourer': user,
+        }
+        Transaction.objects.create(**transaction)
+        # return redirect('applicant:transactions')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
