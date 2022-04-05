@@ -1,3 +1,4 @@
+from email.policy import default
 from django.db import models
 from accounts.models import Account
 # Create your models here.
@@ -52,16 +53,23 @@ class Transaction(models.Model):
     transaction_id = models.CharField(verbose_name="Wallet ID", max_length=50)
     customer = models.ForeignKey(
         Account, on_delete=models.CASCADE, related_name='customer')
+    network = models.CharField(max_length=20, default='MTN')
+    from_phone = models.CharField(max_length=15, blank=True)
     labourer = models.ForeignKey(
         Account, on_delete=models.CASCADE, verbose_name="Labourer")
     amount = models.DecimalField(
         verbose_name="Amount", decimal_places=3, max_digits=10)
     payment_mode = models.CharField(
-        verbose_name="Mode of Payment", max_length=50)
+        verbose_name="Mode of Payment", default='MOMO', max_length=50)
     service = models.CharField(verbose_name="Service Rendered", max_length=50)
-    wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE)
-    payment = models.CharField(verbose_name="Payment Status", max_length=50)
-    payment_date = models.DateTimeField(verbose_name="Payment date")
+    note = models.CharField(max_length=500, blank=True)
+    wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, null=True)
+    payment_status = models.CharField(
+        verbose_name="Payment Status", max_length=50)
+    payment_status_code = models.CharField(max_length=10, default='001')
+    payment_date = models.DateTimeField(
+        verbose_name="Payment date", auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.transaction_id
