@@ -19,6 +19,18 @@ def html_to_pdf(html, context):
 
 
 def make_payment(data):
+    ENDPOINT = 'https://payhubghana.io/api/v1.0/credit_mobile_account/'
+    headers = {
+        "Authorization": f"Token {settings.PAYHUB_SECRET_TOKEN}",
+    }
+
+    response = requests.post(ENDPOINT, data=data, headers=headers)
+    response_data = response.json()
+    print(response_data)
+    return response_data
+
+
+def receive_payment(data):
     ENDPOINT = 'https://payhubghana.io/api/v1.0/debit_mobile_account/'
     headers = {
         "Authorization": f"Token {settings.PAYHUB_SECRET_TOKEN}",
