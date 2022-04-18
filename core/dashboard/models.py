@@ -1,14 +1,17 @@
+import time
+import string
+import random
+import uuid
+import decimal
 from email.policy import default
 from django.db import models
-from accounts.models import Account
-# Create your models here.
 
 
 class Service(models.Model):
     customer = models.ForeignKey(
-        Account, on_delete=models.CASCADE, null=True, related_name='requested')
+        'accounts.Account', on_delete=models.CASCADE, null=True, related_name='requested')
     labourer = models.ForeignKey(
-        Account, on_delete=models.CASCADE, null=True, related_name='doer')
+        'accounts.Account', on_delete=models.CASCADE, null=True, related_name='doer')
     service_name = models.CharField(max_length=200)
     service_description = models.TextField(null=True, blank=True)
     charge = models.DecimalField(max_digits=10, decimal_places=3)
@@ -39,24 +42,61 @@ class Product(models.Model):
 
 
 class Wallet(models.Model):
-    wallet_id = models.CharField(verbose_name="Wallet ID", max_length=50)
+
+    wallet_id = models.CharField(
+        verbose_name="Wallet ID", max_length=100, default=uuid.uuid4)
+    holder = models.ForeignKey(
+        'accounts.Account', on_delete=models.CASCADE, null=True, related_name='account_holder')
     main_balance = models.DecimalField(
-        verbose_name="Main Balance", decimal_places=3, max_digits=10)
+        verbose_name="Main Balance", decimal_places=2, max_digits=50, default=0.0)
     available_balance = models.DecimalField(
-        verbose_name="available Balance", decimal_places=3, max_digits=10)
+        verbose_name="available Balance", decimal_places=2, max_digits=50, default=0.0)
+
+    def credit_available_balance(self, amount):
+        self.available_balance += decimal.Decimal(amount)
+        self.save()
+
+    def debit_available_balance(self, amount):
+        self.available_balance -= decimal.Decimal(amount)
+        self.save()
+
+    def credit_main_balance(self, amount):
+        self.main_balance += decimal.Decimal(amount)
+        self.save()
+
+    def debit_main_balance(self, amount):
+        self.main_balance -= decimal.Decimal(amount)
+        self.save()
+
+    def credit_wallet(self, amount):
+        self.main_balance += decimal.Decimal(amount)
+        self.available_balance += decimal.Decimal(amount)
+        self.save()
+
+    def debit_wallet(self, amount):
+        self.main_balance -= decimal.Decimal(amount)
+        self.available_balance -= decimal.Decimal(amount)
+        self.save()
+
+    def get_wallet_balance(self):
+        return f'Wallet ID: {self.wallet_id} has a balance of: {self.main_balance}'
 
     def __str__(self):
         return self.wallet_id
 
 
 class Transaction(models.Model):
-    transaction_id = models.CharField(verbose_name="Wallet ID", max_length=50)
+    def generate_transaction_id():
+        time_id = str(int(time.time() * 100))
+        return time_id.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+    transaction_id = models.CharField(
+        verbose_name="Wallet ID", max_length=50, default=generate_transaction_id)
     customer = models.ForeignKey(
-        Account, on_delete=models.CASCADE, related_name='customer')
+        'accounts.Account', on_delete=models.CASCADE, related_name='customer')
     network = models.CharField(max_length=20, default='MTN')
     from_phone = models.CharField(max_length=15, blank=True)
     labourer = models.ForeignKey(
-        Account, on_delete=models.CASCADE, verbose_name="Labourer")
+        'accounts.Account', on_delete=models.CASCADE, verbose_name="Labourer")
     amount = models.DecimalField(
         verbose_name="Amount", decimal_places=3, max_digits=10)
     payment_mode = models.CharField(
