@@ -362,6 +362,8 @@
                                     </li>
                                     <li aria-haspopup="true"><a href="{% url 'dashboard:make_payment' %}"
                                             class="slide-item">Make Payment</a></li>
+                                    <li aria-haspopup="true"><a href="{% url 'dashboard:receive_payment' %}"
+                                            class="slide-item">Receive Payment</a></li>
                                 </ul>
                             </li>
                             <li aria-haspopup="true"><a href="#" class="sub-icon">
@@ -383,11 +385,14 @@
                                     Accounts <i class="fe fe-chevron-down horizontal-icon"></i>
                                 </a>
                                 <ul class="sub-menu">
-                                    <li aria-haspopup="true"><a href="" class="slide-item">Customers</a>
+                                    <li aria-haspopup="true"><a href="{% url 'dashboard:customers' %}"
+                                            class="slide-item">Customers</a>
                                     </li>
-                                    <li aria-haspopup="true"><a href="" class="slide-item">Approved Labourers</a>
+                                    <li aria-haspopup="true"><a href="{% url 'dashboard:labourers' %}"
+                                            class="slide-item">Labourers</a>
                                     </li>
-                                    <li aria-haspopup="true"><a href="" class="slide-item">Unapproved Labourers</a>
+                                    <li aria-haspopup="true"><a href="{% url 'dashboard:admins' %}"
+                                            class="slide-item">Administrators</a>
                                     </li>
                                 </ul>
 
