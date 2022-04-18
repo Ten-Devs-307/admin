@@ -59,6 +59,9 @@
                                         <p class="lead">Wallet ID</p>
                                     </th>
                                     <th scope="col">
+                                        <p class="lead">Status</p>
+                                    </th>
+                                    <th scope="col">
                                         <p class="lead">Rank</p>
                                     </th>
                                     <th scope="col">
@@ -84,6 +87,13 @@
                                     <td>{{admin.location}}</td>
                                     <td>{{admin.wallet.wallet_id}}</td>
                                     <td>
+                                        {% if admin.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
                                         {% if admin.is_superuser %} Superuser {% elif admin.is_staff %} Staff
                                         {% endif %}
                                     </td>
@@ -91,15 +101,16 @@
                                     <td>
                                         <div class="row justify-content-center">
 
-                                            {% if perms.accounts.view_account %}
+                                            {% if perms.accounts.view_admin %}
                                             <div class="col-2 mx-1 py-0">
-                                                <a href="" class="btn btn-sm btn-primary btn-sm"><span
+                                                <a href="{% url 'dashboard:admin_details' admin.customer_merchant_id %}"
+                                                    class="btn btn-sm btn-primary btn-sm"><span
                                                         class="bi bi-eye"></span>
                                                 </a>
                                             </div>
                                             {% endif %}
 
-                                            {% if perms.accounts.delete_account and request.user.is_superuser %}
+                                            {% if perms.accounts.delete_admin %}
                                             <form action="" method="POST"
                                                 data-message="Permanently delete this merchant?"
                                                 class="deletion-forms col-2 mx-1 py-0">
