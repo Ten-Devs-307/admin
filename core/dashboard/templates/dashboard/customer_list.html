@@ -56,6 +56,9 @@
                                         <p class="lead">Location</p>
                                     </th>
                                     <th scope="col">
+                                        <p class="lead">Status</p>
+                                    </th>
+                                    <th scope="col">
                                         <p class="lead">Date Joined</p>
                                     </th>
                                     <th scope="col">
@@ -76,19 +79,27 @@
                                     <td>{{customer.phone}}
                                     </td>
                                     <td>{{customer.location}}</td>
+                                    <td>
+                                        {% if customer.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                        {% endif %}
+                                    </td>
                                     <td>{{customer.date_created}}</td>
                                     <td>
                                         <div class="row justify-content-center">
 
-                                            {% if perms.accounts.view_account %}
+                                            {% if perms.accounts.view_customer %}
                                             <div class="col-2 mx-1 py-0">
-                                                <a href="" class="btn btn-sm btn-primary btn-sm"><span
+                                                <a href="{% url 'dashboard:customer_details' customer.customer_merchant_id %}"
+                                                    class="btn btn-sm btn-primary btn-sm"><span
                                                         class="bi bi-eye"></span>
                                                 </a>
                                             </div>
                                             {% endif %}
 
-                                            {% if perms.accounts.delete_account %}
+                                            {% if perms.accounts.delete_customer %}
                                             <form action="" method="POST"
                                                 data-message="Permanently delete this merchant?"
                                                 class="deletion-forms col-2 mx-1 py-0">
