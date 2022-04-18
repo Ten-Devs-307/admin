@@ -18,12 +18,11 @@
         {% endif %}
         <h2>Welcome back!</h2>
         <h5 class="fw-semibold mb-4">Please Login to continue.</h5>
-        <form action="{% url 'accounts:login' %}" method="POST">
+        <form action="" method="POST">
             {% csrf_token %}
             <div class="form-group">
-                <label for="username">Username</label>
-                <input class="form-control" id="username" name="username" placeholder="Enter username" type="text"
-                    value="{{username}}" required>
+                <label for="username">Email</label>
+                <input class="form-control" id="username" name="email" placeholder="Enter Email" type="email" required>
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
