@@ -25,7 +25,7 @@ class Account(AbstractBaseUser, PermissionsMixin):
 
     location = models.CharField(max_length=255, null=True, blank=True)
     customer_merchant_id = models.CharField(
-        max_length=255, default=generate_random_text_id)
+        max_length=255, default=generate_random_text_id)  # unique id for various usercategories
     wallet = models.OneToOneField(
         Wallet, on_delete=models.CASCADE, null=True, blank=True)
     # eg pending, approved, rejected
@@ -49,7 +49,14 @@ class Account(AbstractBaseUser, PermissionsMixin):
         db_table = 'accounts'
 
         permissions = [
-            ('disable_account', 'Can disable account'),
+            ('change_account_status', 'Can Change Status Of Account'),
+            ('view_customer', 'Can View Customer'),
+            ('view_labourer', 'Can View Labourer'),
+            ('view_admin', 'Can View Admins'),
+            ('delete_labourer', 'Can Delete Labourer'),
+            ('delete_admin', 'Can Delete Staff Member'),
+            ('delete_customer', 'Can Delete Customer'),
+            ('change_admin', 'Can Change Admin Status'),
         ]
 
     def __str__(self):
