@@ -1,0 +1,123 @@
+{% extends 'dashboard/base.html' %}
+{% block pagetitle %} Staff {% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mx-auto">
+        <!-- breadcrumb -->
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item"><a href="#">Accounts</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Staff Detail</li>
+                </ol>
+            </nav>
+        </div>
+        <!-- end of breadcrumb -->
+
+        <div class="row">
+            <div class="col-md-12 col-lg-12 col-xl-10 card shadow mx-auto mt-2">
+
+                <div class="card-body">
+                    <h5 class="card-title">{{staff}}</h5>
+                    <div class="row">
+                        <!-- <br> -->
+                        <div class="col-lg-3 col-md-12 mb-3 mb-lg-0">
+                            <div class="bg-image hover-overlay ripple shadow-1-strong rounded"
+                                data-ripple-color="light">
+                                <img src="{% if staff.photo %} {{staff.photo.url}} {% else %} {% static 'assets/img/faces/1.jpg' %} {% endif %} "
+                                    class="img-fluid" alt="" style="height: 100px; width: auto;">
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-12 mb-3 mb-lg-0">
+                            <b>Staff Name</b>
+                            <p class="card-text m-0">{{staff.name}}</p>
+                        </div>
+                        <div class="col-lg-3 col-md-12 mb-3 mb-lg-0">
+                            <b>Staff ID</b>
+                            <p class="card-text m-0">{{staff.customer_merchant_id}}</p>
+                        </div>
+                        <div class="col-lg-3 col-md-12 mb-3 mb-lg-0">
+                            <b>Staff Phone</b>
+                            <p class="card-text m-0">{{staff.phone}}</p>
+                        </div>
+                        <div class="col-lg-3 col-md-12 mb-3 mb-lg-0">
+                            <b>Staff Email</b>
+                            <p class="card-text m-0">{{staff.email}}</p>
+                        </div>
+                        <div class="col-lg-3 col-md-12 mb-3 mb-lg-0">
+                            <b>Staff's Location</b>
+                            <p class="card-text m-0">{{staff.location}}</p>
+                        </div>
+                        <div class="col-lg-3 col-md-12 mb-3 mb-lg-0">
+                            <b>Staff Status</b>
+                            <p class="card-text m-0">
+                                {% if staff.is_active %}
+                                <span class="badge bg-success">Active</span>
+                                {% else %}
+                                <span class="badge bg-danger">Not Active</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-lg-3 col-md-12 mb-3 mb-lg-0">
+                            <b>Staff Rank</b>
+                            <p class="card-text m-0">
+                                {% if staff.is_superuser %}
+                                <span class="badge bg-success">Superuser</span>
+                                {% elif staff.is_staff %}
+                                <span class="badge bg-primary">Admin</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-lg-3 col-md-12 mb-3 mb-lg-0">
+                            <b>Date Created</b>
+                            <p class="card-text m-0">{{staff.date_created}}</p>
+                        </div>
+
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6 mb-4 mt-2 mb-lg-0">Wallet</div>
+                        <div class="col-lg-6 col-md-6 mb-4 mt-2 mb-lg-0">{{staff.wallet.wallet_id}}</div>
+                        <div class="col-lg-6 col-md-6 mb-4 mt-2 mb-lg-0">Balance</div>
+                        <div class="col-lg-6 col-md-6 mb-4 mt-2 mb-lg-0">GH₵ {{staff.wallet.get_wallet_balance}}
+                        </div>
+                    </div>
+
+                    <hr>
+                    <h5 class="card-title">Settings</h5>
+                    <div class="row">
+                        <div class="col-md-6 p-2">
+                            <div class="bg-white p-4">
+                                {% if perms.accounts.change_admin %}
+                                <h5>STATUS</h5>
+                                <form action="" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="admin_id" value="{{staff.customer_merchant_id}}">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="status" id="status"
+                                            value="approved" {% if staff.is_active %}checked{% endif %}>
+                                        <label class="form-check-label" for="approved">Active</label>
+                                    </div>
+
+                                    <div class="form-check form-check-inline">
+                                        <button type="submit" class="btn btn-sm btn-primary"><i class="bi bi-save"></i>
+                                            Save</button>
+                                    </div>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
