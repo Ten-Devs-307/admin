@@ -5,13 +5,16 @@ from datetime import datetime, timedelta
 from django.shortcuts import render, redirect
 from django.views import View
 from django.utils.decorators import method_decorator
+from django.contrib import messages
+from django.contrib.auth.mixins import PermissionRequiredMixin
+
 from accounts.models import Account
 
 from core import settings
+from core.util.constants import Status
 from core.util.decorators import AdminsOnly
 from core.util.util_functions import get_transaction_status, make_payment, receive_payment
 from .models import Product, Service, Transaction, Wallet
-from django.contrib import messages
 
 
 class DashboardView(View):
@@ -45,8 +48,11 @@ class DashboardView(View):
         return render(request, self.template_name, context)
 
 
-class TransactionListView(View):
+class TransactionListView(PermissionRequiredMixin, View):
     template_name = 'dashboard/transactions.html'
+    permission_required = [
+        'dashboard.view_transaction',
+    ]
 
     @method_decorator(AdminsOnly)
     def get(self, request, *args, **kwargs):
@@ -62,8 +68,11 @@ class TransactionListView(View):
         return render(request, self.template_name, context)
 
 
-class CustomerListView(View):
+class CustomerListView(PermissionRequiredMixin, View):
     template_name = 'dashboard/customer_list.html'
+    permission_required = [
+        'accounts.view_customer',
+    ]
 
     @method_decorator(AdminsOnly)
     def get(self, request, *args, **kwargs):
@@ -74,8 +83,49 @@ class CustomerListView(View):
         return render(request, self.template_name, context)
 
 
-class LabourerListView(View):
+class CustomerDetailView(PermissionRequiredMixin, View):
+    template_name = 'dashboard/customer_detail.html'
+    permission_required = [
+        'accounts.view_customer',
+    ]
+
+    @method_decorator(AdminsOnly)
+    def get(self, request, customer_id, *args, **kwargs):
+        customer = Account.objects.filter(
+            customer_merchant_id=customer_id).first()
+        context = {
+            'customer': customer,
+        }
+        return render(request, self.template_name, context)
+
+    @method_decorator(AdminsOnly)
+    def post(self, request, *args, **kwargs):
+        customer_id = request.POST.get('customer_id')
+        customer = Account.objects.filter(
+            customer_merchant_id=customer_id).first()
+        status = request.POST.get('status')
+        if customer is not None:
+            if status == Status.APPROVED.value:
+                customer.is_active = True
+                customer.save()
+                messages.success(
+                    request, 'Customer Account Activated Successfully!')
+            else:
+                customer.is_active = False
+                customer.save()
+                messages.success(
+                    request, 'Customer Account Disabled Successfully!')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            messages.error(request, 'Customer Not Found!')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+class LabourerListView(PermissionRequiredMixin, View):
     template_name = 'dashboard/labourer_list.html'
+    permission_required = [
+        'accounts.view_labourer',
+    ]
 
     @method_decorator(AdminsOnly)
     def get(self, request, *args, **kwargs):
@@ -86,21 +136,52 @@ class LabourerListView(View):
         return render(request, self.template_name, context)
 
 
-class LabourerDetailsView(View):
-    template_name = 'dashboard/labourer_details.html'
+class LabourerDetailsView(PermissionRequiredMixin, View):
+    template_name = 'dashboard/labourer_detail.html'
+    permission_required = [
+        'accounts.view_labourer',
+    ]
 
     @method_decorator(AdminsOnly)
-    def get(self, request, *args, **kwargs):
-        labourer_id = request.GET.get('labourer_id')
-        labourer = Account.objects.get(id=labourer_id)
+    def get(self, request, labourer_id, *args, **kwargs):
+        labourer = Account.objects.filter(
+            customer_merchant_id=labourer_id).first()
         context = {
             'labourer': labourer,
         }
         return render(request, self.template_name, context)
 
+    @method_decorator(AdminsOnly)
+    def post(self, request, *args, **kwargs):
+        labourer_id = request.POST.get('labourer_id')
+        labourer = Account.objects.filter(
+            customer_merchant_id=labourer_id).first()
+        status = request.POST.get('status')
+        if status == Status.APPROVED.value:
+            labourer.is_labourer = True
+            labourer.labourer_status = Status.APPROVED.value
+            labourer.save()
+            messages.success(request, 'Labourer approved successfully')
+        elif status == Status.REJECTED.value:
+            labourer.is_labourer = False
+            labourer.labourer_status = Status.REJECTED.value
+            labourer.save()
+            messages.success(request, 'Labourer rejected successfully')
+        elif status == Status.PENDING.value:
+            labourer.is_labourer = False
+            labourer.labourer_status = Status.PENDING.value
+            labourer.save()
+            messages.success(request, 'Labourer status set to pending!')
+        else:
+            messages.error(request, 'Invalid status choice!')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
 
 class AdminListView(View):
     template_name = 'dashboard/admin_list.html'
+    permission_required = [
+        'accounts.view_admin',
+    ]
 
     @method_decorator(AdminsOnly)
     def get(self, request, *args, **kwargs):
@@ -113,18 +194,59 @@ class AdminListView(View):
         return render(request, self.template_name, context)
 
 
+class AdminDetailView(PermissionRequiredMixin, View):
+    template_name = 'dashboard/admin_detail.html'
+    permission_required = [
+        'accounts.view_admin',
+    ]
+
+    @method_decorator(AdminsOnly)
+    def get(self, request, staff_id, *args, **kwargs):
+        staff = Account.objects.filter(
+            customer_merchant_id=staff_id).first()
+        context = {
+            'staff': staff,
+        }
+        return render(request, self.template_name, context)
+
+    @method_decorator(AdminsOnly)
+    def post(self, request, *args, **kwargs):
+        admin_id = request.POST.get('admin_id')
+        admin = Account.objects.filter(
+            customer_merchant_id=admin_id).first()
+        status = request.POST.get('status')
+        if admin is not None:
+            if status == Status.APPROVED.value:
+                admin.is_active = True
+                admin.save()
+                messages.success(
+                    request, 'Admin Account Activated Successfully!')
+            else:
+                admin.is_active = False
+                admin.save()
+                messages.success(
+                    request, 'Admin Account Disabled Successfully!')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            messages.error(request, 'Admin Not Found!')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
 class ReceivePaymentView(View):
     template_name = 'dashboard/receive_payment.html'
+    permission_required = [
+        'dashboard.receive_payment',
+    ]
 
     def generate_transaction_id(self):
         return int(round(time.time() * 1000))
 
-    @ method_decorator(AdminsOnly)
+    @method_decorator(AdminsOnly)
     def get(self, request, *args, **kwargs):
         context = {}
         return render(request, self.template_name, context)
 
-    @ method_decorator(AdminsOnly)
+    @method_decorator(AdminsOnly)
     def post(self, request, *args, **kwargs):
         print('the payment is being processed')
         user = request.user
@@ -169,16 +291,19 @@ class ReceivePaymentView(View):
 
 class MakePaymentView(View):
     template_name = 'dashboard/make_payment.html'
+    permission_required = [
+        'dashboard.make_payment',
+    ]
 
     def generate_transaction_id(self):
         return int(round(time.time() * 1000))
 
-    @ method_decorator(AdminsOnly)
+    @method_decorator(AdminsOnly)
     def get(self, request, *args, **kwargs):
         context = {}
         return render(request, self.template_name, context)
 
-    @ method_decorator(AdminsOnly)
+    @method_decorator(AdminsOnly)
     def post(self, request, *args, **kwargs):
         print('the payment is being processed')
         user = request.user
