@@ -79,7 +79,7 @@ class Wallet(models.Model):
         self.save()
 
     def get_wallet_balance(self):
-        return f'Wallet ID: {self.wallet_id} has a balance of: {self.main_balance}'
+        return self.main_balance
 
     def __str__(self):
         return self.wallet_id
@@ -113,3 +113,10 @@ class Transaction(models.Model):
 
     def __str__(self):
         return self.transaction_id
+
+    class Meta:
+        db_table = 'transactions'
+        permissions = [
+            ('make_payment', 'Can Make Payment'),
+            ('receive_payment', 'Can Receive Payment'),
+        ]
