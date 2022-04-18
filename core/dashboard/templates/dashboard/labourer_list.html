@@ -97,7 +97,7 @@
                                     <td>
                                         <div class="row justify-content-center">
 
-                                            {% if perms.accounts.view_account %}
+                                            {% if perms.accounts.view_labourer %}
                                             <div class="col-2 mx-1 py-0">
                                                 <a href="{% url 'dashboard:labourer_details' labourer.customer_merchant_id %}"
                                                     class="btn btn-sm btn-primary btn-sm"><span
@@ -106,7 +106,7 @@
                                             </div>
                                             {% endif %}
 
-                                            {% if perms.accounts.delete_account %}
+                                            {% if perms.accounts.delete_labourer %}
                                             <form action="" method="POST"
                                                 data-message="Permanently delete this merchant?"
                                                 class="deletion-forms col-2 mx-1 py-0">
