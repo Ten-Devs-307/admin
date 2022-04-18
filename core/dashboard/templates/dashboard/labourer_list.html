@@ -1,0 +1,145 @@
+{% extends 'dashboard/base.html' %}
+{% block pagetitle %} Labourers {% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mx-auto">
+        <!-- breadcrumb -->
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item"><a href="#">Accounts</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Labourers</li>
+                </ol>
+            </nav>
+        </div>
+        <!-- end of breadcrumb -->
+
+        <div class="row">
+            <div class="col-md-12 col-lg-12 col-xl-10 card shadow mx-auto mt-2">
+
+                <div class="card-body">
+                    <!-- search form -->
+                    <form method="GET">
+                        <div class="row">
+                            <div class="col-10">
+                                <input type="text" class="form-control" name="q" id="search_user"
+                                    placeholder="Customer ID, Phone, Name etc...">
+                            </div>
+                            <div class="col-2">
+                                <button type="submit" class="btn btn-primary">Search</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- end of search form -->
+
+                    <!-- business list table: table responsive -->
+                    <div class="table-responsive mt-2">
+                        <table class="table table-striped table-hover data-table" id="table_id">
+                            <thead class="thead thead-dark pt-2">
+                                <tr>
+                                    <th scope="col">
+                                        <p class="lead">SN</p>
+                                    </th>
+                                    <th scope="col">
+                                        <p class="lead">Labourer ID</p>
+                                    </th>
+                                    <th scope="col">
+                                        <p class="lead">Name</p>
+                                    </th>
+                                    <th scope="col">
+                                        <p class="lead">Phone</p>
+                                    </th>
+                                    <th scope="col">
+                                        <p class="lead">Location</p>
+                                    </th>
+                                    <th scope="col">
+                                        <p class="lead">Wallet ID</p>
+                                    </th>
+                                    <th scope="col">
+                                        <p class="lead">Status</p>
+                                    </th>
+                                    <th scope="col">
+                                        <p class="lead">Date Joined</p>
+                                    </th>
+
+                                    <th scope="col">
+                                        <p class="lead">Action</p>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!--  -->
+                                {% if labourers %}
+                                {% for labourer in labourers %}
+                                <tr>
+                                    <td>{{forloop.counter}}</td>
+                                    <td> <a href="javascript:void(0)">{{labourer.customer_merchant_id}}</a>
+                                    </td>
+                                    <td>{{labourer.name}}
+                                    </td>
+                                    <td>{{labourer.phone}}
+                                    </td>
+                                    <td>{{labourer.location}}</td>
+                                    <td>{{labourer.wallet.wallet_id}}</td>
+                                    <td>
+                                        {% if labourer.labourer_status == 'pending' %}
+                                        <a href="javascript:void(0)" class="btn btn-primary btn-sm">Pending</a>
+                                        {% elif labourer.labourer_status == 'approved' %}
+                                        <a href="javascript:void(0)" class="btn btn-success btn-sm">Approved</a>
+                                        {% elif labourer.labourer_status == 'rejected' %}
+                                        <a href="javascript:void(0)" class="btn btn-danger btn-sm">Rejected</a>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{labourer.date_created}}</td>
+                                    <td>
+                                        <div class="row justify-content-center">
+
+                                            {% if perms.accounts.view_account %}
+                                            <div class="col-2 mx-1 py-0">
+                                                <a href="{% url 'dashboard:labourer_details' labourer.customer_merchant_id %}"
+                                                    class="btn btn-sm btn-primary btn-sm"><span
+                                                        class="bi bi-eye"></span>
+                                                </a>
+                                            </div>
+                                            {% endif %}
+
+                                            {% if perms.accounts.delete_account %}
+                                            <form action="" method="POST"
+                                                data-message="Permanently delete this merchant?"
+                                                class="deletion-forms col-2 mx-1 py-0">
+                                                {% csrf_token %}
+                                                <input type="hidden" value="{{labourer.customer_merchant_id}}"
+                                                    name="labourer_id" id="labourer_id">
+                                                <button class="btn btn-danger btn-sm" type="submit"><span
+                                                        class="bi bi-trash"></span>
+                                                </button>
+                                            </form>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td colspan="12">
+                                        <p class="lead text-center">No Labourer Found!</p>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                <!--  -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- end of user list table -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
