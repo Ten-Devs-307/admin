@@ -12,6 +12,7 @@ from accounts.models import Account
 
 from core import settings
 from core.util.constants import Status
+from core.util.constants import Disbursement as D
 from core.util.decorators import AdminsOnly
 from core.util.util_functions import get_transaction_status, make_payment, receive_payment
 from .models import Disbursement, Product, Service, Transaction, Wallet
@@ -444,7 +445,7 @@ class DisburseToMerchantView(PermissionRequiredMixin, View):
         wallet = Wallet.objects.filter(holder=merchant).first()
         amount = request.POST.get('amount')
         note = request.POST.get('note')
-        if disbursement_type == 'credit':
+        if disbursement_type == D.CREDIT.value:  # Disbursement status is imported as D
             if wallet and merchant:
                 wallet.credit_wallet(amount)
                 wallet.save()
@@ -452,7 +453,6 @@ class DisburseToMerchantView(PermissionRequiredMixin, View):
                     amount=amount,
                     wallet=wallet,
                     disburser=request.user,
-                    merchant=merchant,
                     note=note,
                     modified_by=request.user,
                 )
@@ -460,9 +460,10 @@ class DisburseToMerchantView(PermissionRequiredMixin, View):
                 messages.success(request, 'Credit Successful!')
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
             else:
-                messages.error(request, "Something went wrong! Couldn't Credit Wallet")
+                messages.error(
+                    request, "Something went wrong! Couldn't Credit Wallet")
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-        elif disbursement_type == 'debit':
+        elif disbursement_type == D.DEBIT.value:
             if merchant and wallet:
                 wallet.debit_wallet(amount)
                 wallet.save()
@@ -470,7 +471,6 @@ class DisburseToMerchantView(PermissionRequiredMixin, View):
                     amount=amount,
                     wallet=wallet,
                     disburser=request.user,
-                    merchant=merchant,
                     note=note,
                     modified_by=request.user,
                 )
@@ -478,8 +478,35 @@ class DisburseToMerchantView(PermissionRequiredMixin, View):
                 messages.success(request, 'Debit Successful!')
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
             else:
-                messages.error(request, "Something went wrong! Couldn't Debit Wallet")
+                messages.error(
+                    request, "Something went wrong! Couldn't Debit Wallet")
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         else:
             messages.error(request, 'Invalid Disbursement Type')
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+class WalletListView(View):
+    template_name = 'dashboard/wallet_list.html'
+    permission_required = [
+        'dashboard.view_wallet',
+    ]
+
+    @method_decorator(AdminsOnly)
+    def get(self, request, *args, **kwargs):
+        wallets = Wallet.objects.all().order_by('-id')
+        context = {'wallets': wallets}
+        return render(request, self.template_name, context)
+
+
+class DisbursementListView(View):
+    template_name = 'dashboard/disbursements.html'
+    permission_required = [
+        'dashboard.view_disbursement',
+    ]
+
+    @method_decorator(AdminsOnly)
+    def get(self, request, *args, **kwargs):
+        disbursements = Disbursement.objects.all().order_by('-id')
+        context = {'disbursements': disbursements}
+        return render(request, self.template_name, context)
