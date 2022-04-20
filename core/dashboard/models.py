@@ -85,6 +85,26 @@ class Wallet(models.Model):
         return self.wallet_id
 
 
+class Disbursement(models.Model):
+    wallet = models.ForeignKey(
+        Wallet, on_delete=models.CASCADE, null=True, blank=True, related_name='disbursement')
+    amount = models.DecimalField(
+        decimal_places=2, max_digits=50, default=0.0)
+    note = models.TextField(null=True, blank=True)
+    disburser = models.ForeignKey(
+        'accounts.Account', on_delete=models.CASCADE, null=True, related_name='disburser')
+    date_of_disbursement = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now=True)
+    modified_by = models.ForeignKey(
+        'accounts.Account', on_delete=models.CASCADE, null=True, related_name='modified_by')
+
+    def __str__(self):
+        return self.wallet.wallet_id
+
+    class Meta:
+        db_table = 'disbursements'
+
+
 class Transaction(models.Model):
     def generate_transaction_id():
         time_id = str(int(time.time() * 100))

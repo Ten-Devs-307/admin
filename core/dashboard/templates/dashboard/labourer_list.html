@@ -107,7 +107,7 @@
                                             {% endif %}
 
                                             {% if perms.accounts.delete_labourer %}
-                                            <form action="" method="POST"
+                                            <form action="{% url 'dashboard:delete_labourer' %}" method="POST"
                                                 data-message="Permanently delete this merchant?"
                                                 class="deletion-forms col-2 mx-1 py-0">
                                                 {% csrf_token %}

@@ -3,7 +3,7 @@ from django.db.models.signals import post_save
 
 
 from accounts.models import Account
-from dashboard.models import Wallet
+from dashboard.models import Wallet, Disbursement
 
 
 @receiver(post_save, sender=Account)
@@ -24,3 +24,12 @@ def create_wallet(sender, instance, created, **kwargs):
                 instance.wallet = wallet
                 instance.save()
                 print('Wallet created for labourer')
+
+
+@receiver(post_save, sender=Disbursement)
+def set_modified_by(sender, instance, created, request, **kwargs):
+    '''Set the modified by field to the user who modified the disbursement'''
+    if created == False:
+        instance.modified_by = request.user
+        instance.save()
+        print('Modified by set to request.user')

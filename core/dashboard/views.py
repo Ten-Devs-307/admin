@@ -14,7 +14,7 @@ from core import settings
 from core.util.constants import Status
 from core.util.decorators import AdminsOnly
 from core.util.util_functions import get_transaction_status, make_payment, receive_payment
-from .models import Product, Service, Transaction, Wallet
+from .models import Disbursement, Product, Service, Transaction, Wallet
 
 
 class DashboardView(View):
@@ -121,6 +121,31 @@ class CustomerDetailView(PermissionRequiredMixin, View):
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
+class DeleteCustomerView(PermissionRequiredMixin, View):
+    permission_required = [
+        'accounts.view_customer',
+        'accounts.delete_customer',
+    ]
+
+    @method_decorator(AdminsOnly)
+    def get(self, request, *args, **kwargs):
+        return redirect('dashboard:customers')
+
+    @method_decorator(AdminsOnly)
+    def post(self, request, *args, **kwargs):
+        customer_id = request.POST.get('customer_id')
+        customer = Account.objects.filter(
+            customer_merchant_id=customer_id).first()
+        if customer is not None:
+            customer.delete()
+            messages.success(
+                request, 'Customer Account Deleted Successfully!')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            messages.error(request, 'Customer Not Found!')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
 class LabourerListView(PermissionRequiredMixin, View):
     template_name = 'dashboard/labourer_list.html'
     permission_required = [
@@ -177,7 +202,30 @@ class LabourerDetailsView(PermissionRequiredMixin, View):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-class AdminListView(View):
+class DeleteLabourerView(PermissionRequiredMixin, View):
+    permission_required = [
+        'accounts.view_labourer',
+        'accounts.delete_labourer',
+    ]
+
+    @method_decorator(AdminsOnly)
+    def get(self, request, *args, **kwargs):
+        return redirect('dashboard:labourers')
+
+    @method_decorator(AdminsOnly)
+    def post(self, request, *args, **kwargs):
+        labourer_id = request.POST.get('labourer_id')
+        labourer = Account.objects.filter(
+            customer_merchant_id=labourer_id).first()
+        if labourer is not None:
+            labourer.delete()
+            messages.success(request, 'Labourer deleted successfully!')
+        else:
+            messages.error(request, 'Labourer not found!')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+class AdminListView(PermissionRequiredMixin, View):
     template_name = 'dashboard/admin_list.html'
     permission_required = [
         'accounts.view_admin',
@@ -232,7 +280,31 @@ class AdminDetailView(PermissionRequiredMixin, View):
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-class ReceivePaymentView(View):
+class DeleteAdminView(PermissionRequiredMixin, View):
+    permission_required = [
+        'accounts.view_admin',
+        'accounts.delete_admin',
+    ]
+
+    @method_decorator(AdminsOnly)
+    def get(self, request, *args, **kwargs):
+        '''Only accepts post requests | Redirects to admin list page upon get request'''
+        return redirect('dashboard:admins')
+
+    @method_decorator(AdminsOnly)
+    def post(self, request, *args, **kwargs):
+        staff_id = request.POST.get('admin_id')
+        staff = Account.objects.filter(
+            customer_merchant_id=staff_id).first()
+        if staff is not None:
+            staff.delete()
+            messages.success(request, 'Admin Deleted Successfully!')
+        else:
+            messages.error(request, 'Admin Not Found!')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+class ReceivePaymentView(PermissionRequiredMixin, View):
     template_name = 'dashboard/receive_payment.html'
     permission_required = [
         'dashboard.receive_payment',
@@ -289,7 +361,7 @@ class ReceivePaymentView(View):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-class MakePaymentView(View):
+class MakePaymentView(PermissionRequiredMixin, View):
     template_name = 'dashboard/make_payment.html'
     permission_required = [
         'dashboard.make_payment',
@@ -343,4 +415,71 @@ class MakePaymentView(View):
             'labourer': user,
         }
         Transaction.objects.create(**transaction)
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+class DisburseToMerchantView(PermissionRequiredMixin, View):
+    template_name = 'dashboard/credit_debit_merchant.html'
+    permission_required = [
+        'dashboard.credit_merchant',
+        'dashboard.debit_merchant',
+    ]
+
+    @method_decorator(AdminsOnly)
+    def get(self, request, *args, **kwargs):
+        merchants = Account.objects.filter(
+            Q(is_staff=True) | Q(is_superuser=True) | Q(is_labourer=True)
+        )
+
+        context = {
+            'merchants': merchants,
+        }
+        return render(request, self.template_name, context)
+
+    @method_decorator(AdminsOnly)
+    def post(self, request, *args, **kwargs):
+        disbursement_type = request.POST.get('disbursement_type')
+        merchant = Account.objects.filter(
+            customer_merchant_id=request.POST.get('merchant_id')).first()
+        wallet = Wallet.objects.filter(holder=merchant).first()
+        amount = request.POST.get('amount')
+        note = request.POST.get('note')
+        if disbursement_type == 'credit':
+            if wallet and merchant:
+                wallet.credit_wallet(amount)
+                wallet.save()
+                disbursement = Disbursement.objects.create(
+                    amount=amount,
+                    wallet=wallet,
+                    disburser=request.user,
+                    merchant=merchant,
+                    note=note,
+                    modified_by=request.user,
+                )
+                disbursement.save()
+                messages.success(request, 'Credit Successful!')
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            else:
+                messages.error(request, "Something went wrong! Couldn't Credit Wallet")
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        elif disbursement_type == 'debit':
+            if merchant and wallet:
+                wallet.debit_wallet(amount)
+                wallet.save()
+                disbursement = Disbursement.objects.create(
+                    amount=amount,
+                    wallet=wallet,
+                    disburser=request.user,
+                    merchant=merchant,
+                    note=note,
+                    modified_by=request.user,
+                )
+                disbursement.save()
+                messages.success(request, 'Debit Successful!')
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            else:
+                messages.error(request, "Something went wrong! Couldn't Debit Wallet")
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            messages.error(request, 'Invalid Disbursement Type')
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
