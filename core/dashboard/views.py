@@ -401,7 +401,6 @@ class MakePaymentView(PermissionRequiredMixin, View):
             transaction_status = get_transaction_status(transaction_id)
             if transaction_status['success'] == True:
                 print('the transaction was successful')
-                # user.has_paid = True
                 break
 
         transaction = {
@@ -510,3 +509,67 @@ class DisbursementListView(View):
         disbursements = Disbursement.objects.all().order_by('-id')
         context = {'disbursements': disbursements}
         return render(request, self.template_name, context)
+
+
+class CashoutView(View):
+    template_name = 'dashboard/cashout.html'
+    permission_required = [
+        'dashboard.cashout',
+    ]
+
+    def generate_transaction_id(self):
+        '''Generate random Transaction ID from current time in seconds.'''
+        return int(round(time.time() * 1000))
+
+    @method_decorator(AdminsOnly)
+    def get(self, request, *args, **kwargs):
+        context = {}
+        return render(request, self.template_name, context)
+
+    @method_decorator(AdminsOnly)
+    def post(self, request, *args, **kwargs):
+        print('the payment is being processed')
+        phone = request.POST.get('phone')
+        network = request.POST.get('network')
+        transaction_id = self.generate_transaction_id()
+        amount = request.POST.get('amount')
+        wallet = Wallet.objects.filter(holder=request.user).first()
+
+        data = {
+            'transaction_id': transaction_id,
+            'mobile_number': phone,
+            'amount': amount,
+            'wallet_id': settings.WALLET_ID,
+            'network_code': network,
+            'note': 'Cashout',
+        }
+        response = make_payment(data)
+        transaction_status = get_transaction_status(transaction_id)
+        transaction = {
+            'transaction_id': transaction_id,
+            'amount': amount,
+            'from_phone': phone,
+            'network': network,
+            'note': 'Cashout',
+            'payment_status_code': transaction_status['status_code'],
+            'payment_status': transaction_status['message'],
+            'customer': request.user,
+            'labourer': request.user,
+        }
+        Transaction.objects.create(**transaction)
+        if transaction_status['success'] == True:
+            if wallet:
+                '''If customer has enough balance - proceed to cashout'''
+                if amount > 0 and wallet.get_wallet_balance >= amount:
+                    '''Pay money to user's momo'''
+                    response = make_payment(data)
+                    wallet.debit_wallet(amount)
+                    wallet.save()
+                    messages.success(request, 'Cashout Successful!')
+                    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            else:
+                messages.error(
+                    request, 'Something went wrong! Couldn\'t Cashout')
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        messages.error(request, 'Something went wrong! Couldn\'t Cashout')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
