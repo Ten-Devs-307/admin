@@ -31,7 +31,7 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label for="merchant">Merchant</label>
-                                <select name="merchant" id="merchant" class="form-control">
+                                <select name="merchant_id" id="merchant" class="form-control">
                                     {% for merchant in merchants %}
                                     <option value="{{ merchant.customer_merchant_id }}">
                                         {{ merchant.customer_merchant_id }} - {{merchant.name}}
