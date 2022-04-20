@@ -51,6 +51,8 @@ class Wallet(models.Model):
         verbose_name="Main Balance", decimal_places=2, max_digits=50, default=0.0)
     available_balance = models.DecimalField(
         verbose_name="available Balance", decimal_places=2, max_digits=50, default=0.0)
+    date_added = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def credit_available_balance(self, amount):
         self.available_balance += decimal.Decimal(amount)
