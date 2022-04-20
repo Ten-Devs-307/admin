@@ -27,5 +27,9 @@ urlpatterns = [
          views.AdminDetailView.as_view(), name='admin_details'),
     path('delete-staff/', views.DeleteAdminView.as_view(), name='delete_staff'),
 
-    path('make-disbursement/', views.DisburseToMerchantView.as_view(), name='disburse_to_merchant'),
+    path('make-disbursement/', views.DisburseToMerchantView.as_view(),
+         name='disburse_to_merchant'),
+
+    path('wallets/', views.WalletListView.as_view(), name='wallets'),
+    path('disbursements/', views.DisbursementListView.as_view(), name='disbursements'),
 ]
