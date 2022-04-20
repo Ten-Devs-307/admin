@@ -1,0 +1,88 @@
+{% extends 'dashboard/base.html' %}
+{% block pagetitle %} Disbursements {% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mx-auto">
+        <!-- breadcrumb -->
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item"><a href="#">Wallets</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Disbursements</li>
+                </ol>
+            </nav>
+        </div>
+        <!-- end of breadcrumb -->
+
+        <div class="row">
+            <div class="col-md-12 col-lg-12 col-xl-10 card shadow mx-auto mt-2">
+
+                <div class="card-body">
+                    <!-- search form -->
+                    <form method="GET">
+                        <div class="row">
+                            <div class="col-10">
+                                <input type="text" class="form-control" name="q" id="search_user"
+                                    placeholder="Disbursement ID, Merchant ID etc...">
+                            </div>
+                            <div class="col-2">
+                                <button type="submit" class="btn btn-primary">Search</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- end of search form -->
+
+                    <!-- business list table: table responsive -->
+                    <div class="table-responsive mt-2">
+                        <table class="table table-striped table-hover data-table" id="table_id">
+                            <thead class="thead thead-dark pt-2">
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Wallet ID</th>
+                                    <th scope="col">Merchant ID</th>
+                                    <th scope="col">Amount</th>
+                                    <th scope="col">Note</th>
+                                    <th scope="col">Disburser</th>
+                                    <th scope="col">Date Created</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!--  -->
+                                {% if disbursements %}
+                                {% for disbursement in disbursements %}
+                                <tr>
+                                    <th scope="row">{{forloop.counter}}</th>
+                                    <td><a href="javascript:void(0)">{{disbursement.wallet.wallet_id}}</a></td>
+                                    <td><a
+                                            href="javascript:void(0)">{{disbursement.wallet.holder.customer_merchant_id}}</a>
+                                    </td>
+                                    <td>₵ {{disbursement.amount|floatformat:2}}</td>
+                                    <td>{{disbursement.note|safe}}</td>
+                                    <td>{{disbursement.disburser}}</td>
+                                    <td>{{disbursement.date_of_disbursement}}</td>
+                                </tr>
+                                {% endfor %}
+
+                                {% else %}
+                                <tr>
+                                    <td colspan="12">
+                                        <p class="lead text-center">No disbursement Found!</p>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                <!--  -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- end of user list table -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
