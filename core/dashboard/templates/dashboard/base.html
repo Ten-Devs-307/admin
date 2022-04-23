@@ -162,7 +162,7 @@
                                         </div>
 
                                         <div class="ms-3 my-auto">
-                                            <h6>{{ request.user }}</h6>
+                                            <h6>{{ request.user.name }}</h6>
                                             {% if request.user.is_staff and request.user.is_superuser %}
                                             <span>Render Admin</span>
                                             {% endif %}
