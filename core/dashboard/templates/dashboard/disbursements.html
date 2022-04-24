@@ -44,8 +44,9 @@
                                     <th scope="col">Wallet ID</th>
                                     <th scope="col">Merchant ID</th>
                                     <th scope="col">Amount</th>
-                                    <th scope="col">Note</th>
+                                    <th scope="col">Type</th>
                                     <th scope="col">Disburser</th>
+                                    <th scope="col">Status</th>
                                     <th scope="col">Date Created</th>
                                 </tr>
                             </thead>
@@ -60,8 +61,9 @@
                                             href="javascript:void(0)">{{disbursement.wallet.holder.customer_merchant_id}}</a>
                                     </td>
                                     <td>₵ {{disbursement.amount|floatformat:2}}</td>
-                                    <td>{{disbursement.note|safe}}</td>
+                                    <td>{{disbursement.disbursement_type}}</td>
                                     <td>{{disbursement.disburser}}</td>
+                                    <td>{{disbursement.status}}</td>
                                     <td>{{disbursement.date_of_disbursement}}</td>
                                 </tr>
                                 {% endfor %}
