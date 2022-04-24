@@ -3,8 +3,9 @@ import string
 import random
 import uuid
 import decimal
-from email.policy import default
 from django.db import models
+
+from core.util.constants import (Status, Disbursement)
 
 
 class Service(models.Model):
@@ -81,7 +82,7 @@ class Wallet(models.Model):
         self.save()
 
     def get_wallet_balance(self):
-        return self.main_balance
+        return decimal.Decimal(self.main_balance)
 
     def __str__(self):
         return self.wallet_id
@@ -99,6 +100,9 @@ class Disbursement(models.Model):
     date_modified = models.DateTimeField(auto_now=True)
     modified_by = models.ForeignKey(
         'accounts.Account', on_delete=models.CASCADE, null=True, related_name='modified_by')
+    disbursement_type = models.CharField(max_length=200, blank=True, null=True)
+    status = models.CharField(max_length=200, default=Status.PENDING.value)
+    reason = models.CharField(max_length=200, blank=True, null=True)
 
     def __str__(self):
         return self.wallet.wallet_id
