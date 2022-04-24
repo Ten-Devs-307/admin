@@ -41,6 +41,9 @@ class DashboardView(View):
 
         num_of_transactions_this_month = Transaction.objects.filter(
             payment_date__gte=datetime.now() - timedelta(days=30)).count()
+        balance = 0
+        for wallet in Wallet.objects.filter(holder=request.user):
+            balance += wallet.get_wallet_balance()
         context = {
             'num_of_services': num_of_services,
             'num_of_services_this_week': num_of_services_this_week,
@@ -49,6 +52,7 @@ class DashboardView(View):
             'num_of_transactions': num_of_transactions,
             'num_of_transactions_this_week': num_of_transactions_this_week,
             'num_of_transactions_this_month': num_of_transactions_this_month,
+            'balance': balance
         }
         return render(request, self.template_name, context)
 
@@ -581,7 +585,6 @@ class CashoutView(PermissionRequiredMixin, View):
                 request, 'Something went wrong! Couldn\'t Cashout')
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-        
         response = make_payment(data)
         transaction_status = get_transaction_status(transaction_id)
         '''NOTE: Remember to update the customer and labourer'''
