@@ -26,4 +26,3 @@ class Reason(Enum):
     CREDIT_FAILED = 'credit failed'
     DEBIT_SUCCESSFUL = 'debit successful'
     DEBIT_FAILED = 'debit failed'
-    TRANSACT
