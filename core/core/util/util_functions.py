@@ -1,11 +1,13 @@
 
 
-from core import settings
 from io import BytesIO
+
+import requests
 from django.http import HttpResponse
 from django.template.loader import get_template
-import requests
 from xhtml2pdf import pisa
+
+from core import settings
 
 
 def html_to_pdf(html, context):

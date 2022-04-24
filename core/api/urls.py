@@ -1,10 +1,19 @@
 from django.urls import path
+from knox import views as knox_views
+
 from accounts import views as AccountViews
+
 from . import views as APIViews
+from .views import LoginAPI
 
 app_name = 'api'
 urlpatterns = [
-    path('sign-up/', APIViews.SignUp.as_view(), name='sign_up'),
+    path('sign-up/', APIViews.RegisterAPI.as_view(), name='sign_up'),
+
+     # knox login, logout
+    path('login/', LoginAPI.as_view(), name='login'),
+    path('logout/', knox_views.LogoutView.as_view(), name='logout'),
+    path('logoutall/', knox_views.LogoutAllView.as_view(), name='logoutall'),
 
     path('endpoints/', APIViews.APIOverView.as_view(), name='api_overview'),
     path('accounts/', APIViews.AccountList.as_view(), name='account_list'),

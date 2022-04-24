@@ -1,14 +1,13 @@
-from django.db import models
-from django.contrib.auth.models import PermissionsMixin, AbstractBaseUser
-
-
 import random
 import string
 
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.db import models
+
+from core.util.constants import Status
 from dashboard.models import Wallet
 
 from .manager import AccountManager
-from core.util.constants import Status
 
 
 class Account(AbstractBaseUser, PermissionsMixin):

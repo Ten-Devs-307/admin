@@ -1,5 +1,5 @@
-from django.shortcuts import redirect, HttpResponse
 from django.contrib import messages
+from django.shortcuts import HttpResponse, redirect
 
 
 class AdminsOnly(object):

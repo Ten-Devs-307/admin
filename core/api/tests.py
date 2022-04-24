@@ -1,7 +1,8 @@
+from http import HTTPStatus
 from urllib import response
+
 from django.test import TestCase
 from django.urls import reverse
-from http import HTTPStatus
 
 
 class TestAPIOverview(TestCase):

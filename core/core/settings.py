@@ -1,8 +1,9 @@
 
-import dj_database_url
 import os
-import environ
 from pathlib import Path
+
+import dj_database_url
+import environ
 
 env = environ.Env()
 environ.Env.read_env()
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
     'dashboard.apps.DashboardConfig',
 
     'rest_framework',
+    'knox',
 ]
 
 MIDDLEWARE = [
@@ -142,11 +144,12 @@ AUTH_USER_MODEL = 'accounts.Account'
 PAYHUB_SECRET_TOKEN = env('PAYHUB_SECRET_TOKEN')
 WALLET_ID = env('WALLET_ID')
 
-# REST_FRAMEWORK = {
-#     'DEFAULT_PERMISSION_CLASSES': [
-#         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-#     ]
-# }
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+        'knox.auth.TokenAuthentication',
+    ]
+}
 
 prod_db = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(prod_db)

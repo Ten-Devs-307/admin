@@ -1,9 +1,12 @@
 import imp
+
+from django.contrib.auth import authenticate
 from rest_framework import serializers
 from rest_framework.response import Response
+
 from accounts.models import Account
-from dashboard.models import Transaction, Product, Wallet, Service
-from django.contrib.auth import authenticate
+from dashboard.models import (Disbursement, Product, Service, Transaction,
+                              Wallet)
 
 
 class AccountSerializer(serializers.ModelSerializer):
@@ -38,7 +41,15 @@ class ServiceSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class SignUpSerializer(serializers.ModelSerializer):
+# User Serializer
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Account
+        fields = ('customer_merchant_id', 'name', 'email')
+
+
+# Register Serializer
+class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
         fields = ('email', 'name', 'password')
@@ -46,12 +57,24 @@ class SignUpSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = Account.objects.create_user(
-            email=validated_data['email'],
-            name=validated_data['name'],
-            password=validated_data['password'],
-        )
-        user.save()
+            name=validated_data['name'], email=validated_data['email'], password=validated_data['password'])
+
         return user
+
+# class SignUpSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Account
+#         fields = ('email', 'name', 'password')
+#         extra_kwargs = {'password': {'write_only': True}}
+
+#     def create(self, validated_data):
+#         user = Account.objects.create_user(
+#             email=validated_data['email'],
+#             name=validated_data['name'],
+#             password=validated_data['password'],
+#         )
+#         user.save()
+#         return user
 
 
 class LoginSerializer(serializers.ModelSerializer):
@@ -67,3 +90,18 @@ class LoginSerializer(serializers.ModelSerializer):
             return Response(user, status=200)
         raise Response(
             {"error": "Unable to log in with provided credentials."}, status=400)
+
+
+class CashoutSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = ('amount', 'note', 'disburser', 'disbursement_type', 'status')
+
+    def create(self, validated_data):
+        transaction = Transaction.objects.create(
+            amount=validated_data['amount'],
+            note=validated_data['note'],
+            disbursement_type=validated_data['disbursement_type'],
+        )
+        transaction.save()
+        return transaction

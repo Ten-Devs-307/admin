@@ -1,9 +1,8 @@
-from django.dispatch import receiver
 from django.db.models.signals import post_save
-
+from django.dispatch import receiver
 
 from accounts.models import Account
-from dashboard.models import Wallet, Disbursement
+from dashboard.models import Disbursement, Wallet
 
 
 @receiver(post_save, sender=Account)
