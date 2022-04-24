@@ -1,0 +1,61 @@
+{% extends 'dashboard/base.html' %}
+{% block pagetitle %} Cashout {% endblock %}
+{% load static %}
+
+{% block content %}
+
+<div class="row">
+    <div class="container col-10 mx-auto">
+        <!-- breadcrumb -->
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item"><a href="#">Transactions</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Cashout</li>
+                </ol>
+            </nav>
+        </div>
+        <!-- end of breadcrumb -->
+
+        <!-- business registration form -->
+        <div class="row">
+            <div class="col-md-10 col-lg-10 col-xl-9 card shadow mx-auto mt-2">
+                <div class="card-header">
+                    <h3 class="card-title">Cashout</h3>
+                </div>
+                <div class="card-body">
+                    <h5 class="fw-semibold mb-4 text-primary">Cashout</h5>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="phone">Phone</label>
+                            <input class="form-control" id="phone" name="phone" type="text" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="amount">Amount</label>
+                            <input class="form-control" id="amount" name="amount" type="number" min="0" step="0.1"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label for="network">Network</label>
+                            <select name="network" id="network" class="form-control">
+                                <option value="MTN" selected>MTN</option>
+                                <option value="VODA">VODA</option>
+                                <option value="AIRTELL_TIGO">AIRTELL-TIGO</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="note">Note</label>
+                            <input class="form-control" id="note" name="note" type="text">
+                        </div>
+                        <button class="btn btn-main-primary btn-block" type="submit">Cashout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    {% endblock %}
