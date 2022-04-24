@@ -463,6 +463,7 @@ class DisburseToMerchantView(PermissionRequiredMixin, View):
                     note=note,
                     modified_by=request.user,
                     disbursement_type=D.CREDIT.value,
+                    reason=R.CREDIT_SUCCESSFUL.value,
                     status=S.COMPLETED.value,   # Status is imported as S
                 )
                 disbursement.save()
@@ -483,6 +484,7 @@ class DisburseToMerchantView(PermissionRequiredMixin, View):
                     note=note,
                     modified_by=request.user,
                     disbursement_type=D.CREDIT.value,
+                    reason=R.DEBIT_SUCCESSFUL.value,
                     status=S.COMPLETED.value,   # Status is imported as S
                 )
                 disbursement.save()
@@ -564,6 +566,7 @@ class CashoutView(PermissionRequiredMixin, View):
                 note='cashout',
                 modified_by=request.user,
                 disbursement_type=D.CASHOUT.value,
+                reason=R.CASHOUT_SUCCESSFUL.value,
                 status=S.PROCESSING.value,   # Status is imported as S
             )
             disbursement.save()
@@ -607,6 +610,10 @@ class CashoutView(PermissionRequiredMixin, View):
             disbursement.save()
             messages.success(request, 'Cashout Successful!')
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
-        messages.error(request, 'Something went wrong! Couldn\'t Cashout')
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            disbursement.status = S.FAILED.value
+            disbursement.reason = R.CASHOUT_FAILED.value
+            disbursement.save()
+            messages.error(
+                request, 'Something went wrong! Couldn\'t Cashout')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
