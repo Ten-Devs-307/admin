@@ -30,7 +30,6 @@ class APIOverView(View):
 
 class AccountList(APIView):
 
-    # @method_decorator(api_view(['GET']))
     def get(self, request):
         accounts = Account.objects.all()
         serializer = AccountSerializer(accounts, many=True)
@@ -39,7 +38,6 @@ class AccountList(APIView):
 
 class AccountDetail(APIView):
 
-    # @method_decorator(api_view(['GET']))
     def get(self, request, pk, *args, **kwargs):
         account = Account.objects.filter(id=pk).first()
         serializer = AccountSerializer(account, many=False)
@@ -48,7 +46,6 @@ class AccountDetail(APIView):
 
 class ProductList(APIView):
 
-    # @method_decorator(api_view(['GET']))
     def get(self, request):
         products = Product.objects.all()
         serializer = ProductSerializer(products, many=True)
@@ -57,7 +54,6 @@ class ProductList(APIView):
 
 class ProductDetail(APIView):
 
-    # @method_decorator(api_view(['GET']))
     def get(self, request, pk, *args, **kwargs):
         product = Product.objects.filter(id=pk).first()
         serializer = ProductSerializer(product, many=False)
@@ -66,7 +62,6 @@ class ProductDetail(APIView):
 
 class ServiceList(APIView):
 
-    # @method_decorator(api_view(['GET']))
     def get(self, request):
         services = Service.objects.all()
         serializer = ServiceSerializer(services, many=True)
@@ -75,7 +70,6 @@ class ServiceList(APIView):
 
 class ServiceDetail(APIView):
 
-    # @method_decorator(api_view(['GET']))
     def get(self, request, pk, *args, **kwargs):
         service = Service.objects.filter(id=pk).first()
         serializer = ServiceSerializer(service, many=False)
@@ -84,7 +78,6 @@ class ServiceDetail(APIView):
 
 class TransactionList(APIView):
 
-    # @method_decorator(api_view(['GET']))
     def get(self, request):
         transactions = Transaction.objects.all()
         serializer = TransactionSerializer(transactions, many=True)
@@ -93,7 +86,6 @@ class TransactionList(APIView):
 
 class TransactionDetail(APIView):
 
-    # @method_decorator(api_view(['GET']))
     def get(self, request, pk, *args, **kwargs):
         transaction = Transaction.objects.filter(id=pk).first()
         serializer = TransactionSerializer(transaction, many=False)
@@ -102,7 +94,6 @@ class TransactionDetail(APIView):
 
 class WalletList(APIView):
 
-    # @method_decorator(api_view(['GET']))
     def get(self, request):
         wallets = Wallet.objects.all()
         serializer = WalletSerializer(wallets, many=True)
@@ -111,7 +102,6 @@ class WalletList(APIView):
 
 class WalletDetail(APIView):
 
-    # @method_decorator(api_view())
     def get(self, request, pk, *args, **kwargs):
         wallet = Wallet.objects.filter(id=pk).first()
         serializer = WalletSerializer(wallet, many=False)
@@ -120,7 +110,6 @@ class WalletDetail(APIView):
 
 class SignUp(APIView):
 
-    # @method_decorator(api_view(['GET', 'POST']))
     def get(self, request):
         return Response(status=200)
 
@@ -130,3 +119,16 @@ class SignUp(APIView):
             serializer.save()
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=206)
+
+
+class Login(APIView):
+    
+        def get(self, request):
+            return Response(status=200)
+    
+        def post(self, request):
+            serializer = AccountSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=201)
+            return Response(serializer.errors, status=206)
