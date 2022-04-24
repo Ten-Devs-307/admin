@@ -29,6 +29,7 @@ urlpatterns = [
 
     path('make-disbursement/', views.DisburseToMerchantView.as_view(),
          name='disburse_to_merchant'),
+     path('cashout/', views.CashoutView.as_view(), name='cashout'),
 
     path('wallets/', views.WalletListView.as_view(), name='wallets'),
     path('disbursements/', views.DisbursementListView.as_view(), name='disbursements'),
