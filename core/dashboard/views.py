@@ -11,11 +11,15 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from accounts.models import Account
 
 from core import settings
-from core.util.constants import Status
 from core.util.constants import Disbursement as D
+from core.util.constants import Status as S
+from core.util.constants import Reason as R
 from core.util.decorators import AdminsOnly
 from core.util.util_functions import get_transaction_status, make_payment, receive_payment
 from .models import Disbursement, Product, Service, Transaction, Wallet
+
+
+import decimal
 
 
 class DashboardView(View):
@@ -454,6 +458,8 @@ class DisburseToMerchantView(PermissionRequiredMixin, View):
                     disburser=request.user,
                     note=note,
                     modified_by=request.user,
+                    disbursement_type=D.CREDIT.value,
+                    status=S.COMPLETED.value,   # Status is imported as S
                 )
                 disbursement.save()
                 messages.success(request, 'Credit Successful!')
@@ -472,6 +478,8 @@ class DisburseToMerchantView(PermissionRequiredMixin, View):
                     disburser=request.user,
                     note=note,
                     modified_by=request.user,
+                    disbursement_type=D.CREDIT.value,
+                    status=S.COMPLETED.value,   # Status is imported as S
                 )
                 disbursement.save()
                 messages.success(request, 'Debit Successful!')
@@ -485,7 +493,7 @@ class DisburseToMerchantView(PermissionRequiredMixin, View):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-class WalletListView(View):
+class WalletListView(PermissionRequiredMixin, View):
     template_name = 'dashboard/wallet_list.html'
     permission_required = [
         'dashboard.view_wallet',
@@ -498,7 +506,7 @@ class WalletListView(View):
         return render(request, self.template_name, context)
 
 
-class DisbursementListView(View):
+class DisbursementListView(PermissionRequiredMixin, View):
     template_name = 'dashboard/disbursements.html'
     permission_required = [
         'dashboard.view_disbursement',
@@ -511,7 +519,7 @@ class DisbursementListView(View):
         return render(request, self.template_name, context)
 
 
-class CashoutView(View):
+class CashoutView(PermissionRequiredMixin, View):
     template_name = 'dashboard/cashout.html'
     permission_required = [
         'dashboard.cashout',
@@ -534,7 +542,6 @@ class CashoutView(View):
         transaction_id = self.generate_transaction_id()
         amount = request.POST.get('amount')
         wallet = Wallet.objects.filter(holder=request.user).first()
-
         data = {
             'transaction_id': transaction_id,
             'mobile_number': phone,
@@ -543,8 +550,41 @@ class CashoutView(View):
             'network_code': network,
             'note': 'Cashout',
         }
+
+        if wallet:
+            '''Create disbursement'''
+            disbursement = Disbursement.objects.create(
+                amount=amount,
+                wallet=wallet,
+                disburser=request.user,
+                note='cashout',
+                modified_by=request.user,
+                disbursement_type=D.CASHOUT.value,
+                status=S.PROCESSING.value,   # Status is imported as S
+            )
+            disbursement.save()
+
+            '''If customer has enough balance - proceed to cashout'''
+            if decimal.Decimal(amount) > 0 and wallet.get_wallet_balance() >= decimal.Decimal(amount):
+                '''Pay money to user's momo'''
+                response = make_payment(data)
+                wallet.debit_available_balance(amount)
+                wallet.save()
+                messages.success(request, 'Cashout Successful!')
+                # return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            elif decimal.Decimal(amount) > 0 and wallet.get_wallet_balance() < decimal.Decimal(amount):
+                messages.error(
+                    request, "You don't have enough balance to cashout")
+                # return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            messages.error(
+                request, 'Something went wrong! Couldn\'t Cashout')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+        
         response = make_payment(data)
         transaction_status = get_transaction_status(transaction_id)
+        '''NOTE: Remember to update the customer and labourer'''
         transaction = {
             'transaction_id': transaction_id,
             'amount': amount,
@@ -558,18 +598,12 @@ class CashoutView(View):
         }
         Transaction.objects.create(**transaction)
         if transaction_status['success'] == True:
-            if wallet:
-                '''If customer has enough balance - proceed to cashout'''
-                if amount > 0 and wallet.get_wallet_balance >= amount:
-                    '''Pay money to user's momo'''
-                    response = make_payment(data)
-                    wallet.debit_wallet(amount)
-                    wallet.save()
-                    messages.success(request, 'Cashout Successful!')
-                    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-            else:
-                messages.error(
-                    request, 'Something went wrong! Couldn\'t Cashout')
-                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            wallet.debit_main_balance(amount)
+            wallet.save()
+            disbursement.status = S.SUCCESSFUL.value
+            disbursement.save()
+            messages.success(request, 'Cashout Successful!')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
         messages.error(request, 'Something went wrong! Couldn\'t Cashout')
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
