@@ -53,7 +53,6 @@
     <!-- datatabls -->
     <link rel="stylesheet" href="https://cdn.datatables.net/autofill/2.3.9/css/autoFill.dataTables.min.css">
 
-
 </head>
 
 <body class="main-body">
@@ -412,6 +411,8 @@
                                     <li aria-haspopup="true"><a href="{% url 'dashboard:disburse_to_merchant' %}"
                                             class="slide-item">Credit - Debit Wallet</a>
                                     </li>
+                                    <li aria-haspopup="true"><a href="{% url 'dashboard:cashout' %}"
+                                            class="slide-item">Cashout</a></li>
                                 </ul>
 
                             </li>
@@ -482,6 +483,7 @@
 
     <!--Internal Apexchart js-->
     <script src="{% static 'assets/js/apexcharts.js' %}"></script>
+    <script src="{% static 'assets/js/chartjs.js' %}"></script>
 
     <!-- Horizontalmenu js-->
     <script src="{% static 'assets/plugins/horizontal-menu/horizontal-menu-2/horizontal-menu.js' %}"></script>
