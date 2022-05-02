@@ -10,6 +10,11 @@ from core.util.constants import Disbursement, Status
 
 
 class Service(models.Model):
+    '''Services are jobs.'''
+    def generate_job_id():
+        return ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
+    job_id = models.CharField(
+        max_length=12, default=generate_job_id(), unique=False)
     customer = models.ForeignKey(
         'accounts.Account', on_delete=models.CASCADE, null=True, related_name='requested')
     labourer = models.ForeignKey(
