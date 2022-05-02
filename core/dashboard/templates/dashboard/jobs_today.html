@@ -60,7 +60,15 @@
                                     <td>{{job.labourer.name}}</td>
                                     <td>{{job.service_name}}</td>
                                     <td>₵ {{job.charge}}</td>
-                                    <td>{{job.status}}</td>
+                                    <td>
+                                        {% if job.status == 'pending' %}
+                                        <span class="badge bg-warning">{{job.status}}</span>
+                                        {% elif job.status == 'completed' %}
+                                        <span class="badge bg-primary">{{job.status}}</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">{{job.status}}</span>
+                                        {% endif %}
+                                    </td>
                                     <td>{{job.date_of_service}}</td>
                                 </tr>
                                 {% endfor %}
