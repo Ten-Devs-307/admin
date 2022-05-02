@@ -93,7 +93,8 @@ class TransactionList(APIView):
         return Response(serializer.data)
 
 
-class TransactionDetail(APIView):
+class TransactionDetail(generics.GenericAPIView):
+    permission_classes = (permissions.AllowAny,)
 
     def get(self, request, pk, *args, **kwargs):
         transaction = Transaction.objects.filter(id=pk).first()
