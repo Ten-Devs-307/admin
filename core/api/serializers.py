@@ -61,20 +61,6 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         return user
 
-# class SignUpSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Account
-#         fields = ('email', 'name', 'password')
-#         extra_kwargs = {'password': {'write_only': True}}
-
-#     def create(self, validated_data):
-#         user = Account.objects.create_user(
-#             email=validated_data['email'],
-#             name=validated_data['name'],
-#             password=validated_data['password'],
-#         )
-#         user.save()
-#         return user
 
 
 class LoginSerializer(serializers.ModelSerializer):
@@ -105,3 +91,18 @@ class CashoutSerializer(serializers.ModelSerializer):
         )
         transaction.save()
         return transaction
+
+
+class DisbursementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Disbursement
+        fields = ('amount', 'note', 'disburser', 'disbursement_type', 'status')
+
+    def create(self, validated_data):
+        disbursement = Disbursement.objects.create(
+            amount=validated_data['amount'],
+            note=validated_data['note'],
+            disbursement_type=validated_data['disbursement_type'],
+        )
+        disbursement.save()
+        return disbursement
