@@ -59,4 +59,5 @@ class Account(AbstractBaseUser, PermissionsMixin):
         ]
 
     def __str__(self):
-        return self.name
+        '''In the case where user is not having a name, we return email'''
+        return self.name if self.name else self.email
