@@ -4,3 +4,5 @@ from .models import *
 
 admin.site.register(Wallet)
 admin.site.register(Transaction)
+admin.site.register(Disbursement)
+admin.site.register(Service)
