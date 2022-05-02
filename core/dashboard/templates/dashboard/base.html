@@ -370,11 +370,13 @@
                                     <i class="fa fa-book"></i> Jobs<i
                                         class="fe fe-chevron-down horizontal-icon"></i></a>
                                 <ul class="sub-menu">
-                                    <li aria-haspopup="true"><a href="" class="slide-item">Jobs Today</a>
+                                    <li aria-haspopup="true"><a href="{% url 'dashboard:jobs_today' %}"
+                                            class="slide-item">Jobs Today</a>
                                     </li>
-                                    <li aria-haspopup="true"><a href="" class="slide-item">Pending Jobs</a>
+                                    <li aria-haspopup="true"><a href="{% url 'dashboard:pending_jobs' %}" class="slide-item">Pending Jobs</a>
                                     </li>
-                                    <li aria-haspopup="true"><a href="" class="slide-item">Completed Jobs</a>
+                                    <li aria-haspopup="true"><a href="{% url 'dashboard:completed_jobs' %}"
+                                            class="slide-item">Completed Jobs</a>
                                     </li>
 
 
