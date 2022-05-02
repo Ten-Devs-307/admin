@@ -30,7 +30,7 @@ urlpatterns = [
 
     path('make-disbursement/', views.DisburseToMerchantView.as_view(),
          name='disburse_to_merchant'),
-     path('cashout/', views.CashoutView.as_view(), name='cashout'),
+    path('cashout/', views.CashoutView.as_view(), name='cashout'),
 
     path('wallets/', views.WalletListView.as_view(), name='wallets'),
     path('disbursements/', views.DisbursementListView.as_view(), name='disbursements'),
@@ -38,4 +38,8 @@ urlpatterns = [
     path('jobs-today/', views.JobsTodayView.as_view(), name='jobs_today'),
     path('completed-jobs/', views.CompletedJobsView.as_view(), name='completed_jobs'),
     path('pending-jobs/', views.PendingJobsView.as_view(), name='pending_jobs'),
+
+    #     path('profile/', views.UserProfileView.as_view(), name='profile'),
+    path('change-password/', views.ChangePasswordView.as_view(),
+         name='change_password'),
 ]
