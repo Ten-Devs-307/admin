@@ -11,6 +11,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.utils.decorators import method_decorator
 from django.views import View
+from django.contrib.auth import update_session_auth_hash
 
 from accounts.models import Account
 from core import settings
@@ -674,3 +675,51 @@ class PendingJobsView(PermissionRequiredMixin, View):
             status=S.COMPLETED.value).order_by('-id')
         context = {'jobs': jobs}
         return render(request, self.template_name, context)
+
+
+# class UserProfileView(PermissionRequiredMixin, View):
+#     template_name = 'dashboard/user_profile.html'
+#     permission_required = [
+#         'dashboard.view_user',
+#     ]
+
+#     @method_decorator(AdminsOnly)
+#     def get(self, request, *args, **kwargs):
+#         user = request.user
+#         context = {'user': user}
+#         return render(request, self.template_name, context)
+
+
+class ChangePasswordView(PermissionRequiredMixin, View):
+    template_name = 'dashboard/change_password.html'
+    permission_required = [
+        'dashboard.change_user',
+    ]
+
+    @method_decorator(AdminsOnly)
+    def get(self, request, *args, **kwargs):
+        context = {}
+        return render(request, self.template_name, context)
+
+    @method_decorator(AdminsOnly)
+    def post(self, request, *args, **kwargs):
+        old_password = request.POST.get('old_password')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+        if request.user.check_password(old_password):
+            if new_password == confirm_password:
+                request.user.set_password(new_password)
+                request.user.save()
+                messages.success(request, 'Password changed successfully')
+                '''Keep user logged in after password change'''
+                update_session_auth_hash(request, request.user)
+                return redirect('dashboard:change_password')
+            else:
+                messages.error(
+                    request,
+                    'New password and confirm password does not match')
+                return redirect('dashboard:change_password')
+        else:
+            messages.error(request, 'Old Password Not Valid!')
+            print('Current Password Not Valid!')
+            return redirect('dashboard:change_password')
