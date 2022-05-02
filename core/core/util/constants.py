@@ -3,6 +3,7 @@ from enum import Enum
 
 class Status(Enum):
     APPROVED = 'approved'
+    DRAFT = 'draft'
     PENDING = 'pending'
     REJECTED = 'rejected'
     PROCESSING = 'processing'
