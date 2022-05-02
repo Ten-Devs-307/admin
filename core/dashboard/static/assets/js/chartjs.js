@@ -431,10 +431,13 @@ $(function () {
 	var myPieChart7 = new Chart(ctx7, {
 		type: 'pie',
 		data: {
-			labels: ['Customers', 'Labourers', 'Staff'],
+			// labels: ['Customers', 'Labourers', 'Staff'],
+			labels: ['Completed', 'Pending'],
 			datasets: [{
-				data: [250, 50, 100],
-				backgroundColor: ['#285cf7', '#8500ff', '#74de00']
+				// data: [250, 50, 100],
+				data: [250, 112],
+				// backgroundColor: ['#285cf7', '#8500ff', '#74de00']
+				backgroundColor: ['#8500ff', '#74de00']
 			}]
 		},
 		options: optionpie
