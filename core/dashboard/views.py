@@ -1,6 +1,8 @@
 import decimal
 import time
 from datetime import datetime, timedelta
+from datetime import date
+import datetime as dt
 
 from django.contrib import messages
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -617,3 +619,58 @@ class CashoutView(PermissionRequiredMixin, View):
             messages.error(
                 request, 'Something went wrong! Couldn\'t Cashout')
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+class JobsListView(PermissionRequiredMixin, View):
+    template_name = 'dashboard/jobs.html'
+    permission_required = [
+        'dashboard.view_service',
+    ]
+
+    @method_decorator(AdminsOnly)
+    def get(self, request, *args, **kwargs):
+        jobs = Service.objects.all().order_by('-id')
+        context = {'jobs': jobs}
+        return render(request, self.template_name, context)
+
+
+class JobsTodayView(PermissionRequiredMixin, View):
+    template_name = 'dashboard/jobs_today.html'
+    permission_required = [
+        'dashboard.view_service',
+    ]
+
+    @method_decorator(AdminsOnly)
+    def get(self, request, *args, **kwargs):
+        jobs = Service.objects.filter(
+            date_of_service__date=date.today()).order_by('-id')
+        context = {'jobs': jobs}
+        return render(request, self.template_name, context)
+
+
+class CompletedJobsView(PermissionRequiredMixin, View):
+    template_name = 'dashboard/completed_jobs.html'
+    permission_required = [
+        'dashboard.view_service',
+    ]
+
+    @method_decorator(AdminsOnly)
+    def get(self, request, *args, **kwargs):
+        jobs = Service.objects.filter(
+            status=S.COMPLETED.value).order_by('-id')
+        context = {'jobs': jobs}
+        return render(request, self.template_name, context)
+
+
+class PendingJobsView(PermissionRequiredMixin, View):
+    template_name = 'dashboard/pending_jobs.html'
+    permission_required = [
+        'dashboard.view_service',
+    ]
+
+    @method_decorator(AdminsOnly)
+    def get(self, request, *args, **kwargs):
+        jobs = Service.objects.exclude(
+            status=S.COMPLETED.value).order_by('-id')
+        context = {'jobs': jobs}
+        return render(request, self.template_name, context)
