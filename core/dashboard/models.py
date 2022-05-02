@@ -23,6 +23,7 @@ class Service(models.Model):
     service_description = models.TextField(null=True, blank=True)
     charge = models.DecimalField(max_digits=10, decimal_places=3)
     mode_of_payment = models.CharField(max_length=200)
+    status = models.CharField(max_length=200, default=Status.PENDING.value)
     date_of_service = models.DateTimeField(auto_now_add=True)
     date_of_completion = models.DateTimeField(auto_now=True)
 
