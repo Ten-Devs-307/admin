@@ -47,7 +47,9 @@
                                     <th scope="col">Job</th>
                                     <th scope="col">Amount</th>
                                     <th scope="col">Status</th>
+                                    <th scope="col">Published</th>
                                     <th scope="col">Date Created</th>
+                                    <th scope="col">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -69,7 +71,43 @@
                                         <span class="badge bg-secondary">{{job.status}}</span>
                                         {% endif %}
                                     </td>
+                                    <td>
+                                        {% if job.is_published %}
+                                        <span class="badge bg-success">Yes</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">No</span>
+                                        {% endif %}
+                                    </td>
                                     <td>{{job.date_of_service}}</td>
+                                    <td>
+                                        <div class="row justify-content-start">
+
+                                            {% if perms.dashboard.view_service %}
+                                            <div class="col-2  py-0">
+                                                <a href="" class="btn btn-sm btn-primary btn-sm "><span
+                                                        class="bi bi-eye"></span></a>
+                                            </div>
+                                            {% endif %}
+
+                                            {% if perms.dashboard.change_service %}
+                                            <div class="col-2  py-0">
+                                                <a href="" class="btn btn-success btn-sm"><span
+                                                        class="bi bi-pen"></span></a>
+                                            </div>
+                                            {% endif %}
+
+                                            {% if perms.dashboard.delete_service %}
+                                            <form action="" method="POST"
+                                                data-message="Permanently delete this merchant?"
+                                                class="deletion-forms col-2 py-0">
+                                                {% csrf_token %}
+                                                <input type="hidden" value="{{job.id}}" name="job_id" id="job_id">
+                                                <button class="btn btn-danger btn-sm" type="submit"><span
+                                                        class="bi bi-trash"></span></button>
+                                            </form>
+                                            {% endif %}
+                                        </div>
+                                    </td>
                                 </tr>
                                 {% endfor %}
 
