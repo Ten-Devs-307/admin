@@ -82,8 +82,7 @@
                                             {% endif %}
 
                                             {% if perms.dashboard.delete_service %}
-                                            <form action="" method="POST"
-                                                data-message="Permanently delete this merchant?"
+                                            <form action="" method="POST" data-message="Permanently delete this Job?"
                                                 class="deletion-forms col-2 py-0">
                                                 {% csrf_token %}
                                                 <input type="hidden" value="{{job.id}}" name="job_id" id="job_id">
