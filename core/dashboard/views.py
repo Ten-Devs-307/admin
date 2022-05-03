@@ -21,8 +21,9 @@ from core.util.constants import Status as S
 from core.util.decorators import AdminsOnly
 from core.util.util_functions import (get_transaction_status, make_payment,
                                       receive_payment)
+from dashboard.forms import JobCategoryForm, UpdateJobCategoryForm
 
-from .models import Disbursement, Product, Service, Transaction, Wallet
+from .models import Disbursement, JobCategory, Product, Service, Transaction, Wallet
 
 
 class DashboardView(View):
@@ -585,7 +586,7 @@ class CashoutView(PermissionRequiredMixin, View):
             elif decimal.Decimal(amount) > 0 and wallet.get_wallet_balance() < decimal.Decimal(amount):
                 messages.error(
                     request, "You don't have enough balance to cashout")
-                # return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         else:
             messages.error(
                 request, 'Something went wrong! Couldn\'t Cashout')
@@ -634,6 +635,14 @@ class JobsListView(PermissionRequiredMixin, View):
         context = {'jobs': jobs}
         return render(request, self.template_name, context)
 
+    def post(self, request, *args, **kwargs):
+        '''Delete a job and redirect to the referer page'''
+        job_id = request.POST.get('job_id')
+        job = Service.objects.filter(id=job_id).first()
+        job.delete()
+        messages.success(request, 'Job Deleted Successfully')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
 
 class JobsTodayView(PermissionRequiredMixin, View):
     template_name = 'dashboard/jobs_today.html'
@@ -647,6 +656,17 @@ class JobsTodayView(PermissionRequiredMixin, View):
             date_of_service__date=date.today()).order_by('-id')
         context = {'jobs': jobs}
         return render(request, self.template_name, context)
+
+    # Accept post method from the deletion form
+
+    @method_decorator(AdminsOnly)
+    def post(self, request, *args, **kwargs):
+        '''Delete a job and redirect to the referer page'''
+        job_id = request.POST.get('job_id')
+        job = Service.objects.filter(id=job_id).first()
+        job.delete()
+        messages.success(request, 'Job Deleted Successfully')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 class CompletedJobsView(PermissionRequiredMixin, View):
@@ -662,6 +682,16 @@ class CompletedJobsView(PermissionRequiredMixin, View):
         context = {'jobs': jobs}
         return render(request, self.template_name, context)
 
+    # Accept post method from the deletion form
+    @method_decorator(AdminsOnly)
+    def post(self, request, *args, **kwargs):
+        '''Delete a job and redirect to the referer page'''
+        job_id = request.POST.get('job_id')
+        job = Service.objects.filter(id=job_id).first()
+        job.delete()
+        messages.success(request, 'Job Deleted Successfully')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
 
 class PendingJobsView(PermissionRequiredMixin, View):
     template_name = 'dashboard/pending_jobs.html'
@@ -675,6 +705,16 @@ class PendingJobsView(PermissionRequiredMixin, View):
             status=S.COMPLETED.value).order_by('-id')
         context = {'jobs': jobs}
         return render(request, self.template_name, context)
+
+    # Accept post method from the deletion form
+    @method_decorator(AdminsOnly)
+    def post(self, request, *args, **kwargs):
+        '''Delete a job and redirect to the referer page'''
+        job_id = request.POST.get('job_id')
+        job = Service.objects.filter(id=job_id).first()
+        job.delete()
+        messages.success(request, 'Job Deleted Successfully')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 # class UserProfileView(PermissionRequiredMixin, View):
@@ -723,3 +763,116 @@ class ChangePasswordView(PermissionRequiredMixin, View):
             messages.error(request, 'Old Password Not Valid!')
             print('Current Password Not Valid!')
             return redirect('dashboard:change_password')
+
+
+class DeleteJobView(PermissionRequiredMixin, View):
+    '''Job deletion CBV'''
+    permission_required = [
+        'dashboard.delete_service'
+    ]
+
+    @method_decorator(AdminsOnly)
+    def get(self, request, *args, **kwargs):
+        '''Redirect to jobs_today list when user uses get method'''
+        call_back = 'dashboard:jobs_today'
+        return redirect(call_back)
+
+
+class CreateJobCategoryView(PermissionRequiredMixin, View):
+    permission_required = [
+        'dashboard.add_jobcategory',
+    ]
+
+    template_name = 'dashboard/create_update_job_category.html'
+
+    @method_decorator(AdminsOnly)
+    def get(self, request, *args, **kwargs):
+        context = {'head': 'Create'}
+        return render(request, self.template_name, context)
+
+    @method_decorator(AdminsOnly)
+    def post(self, request, *args, **kwargs):
+        form = JobCategoryForm(request.POST, request.FILES or None)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Job Category Saved Successfully')
+            return redirect('dashboard:job_categories')
+        else:
+            messages.error(request, 'Job Category Not Saved')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+class UpdateJobCategoryView(PermissionRequiredMixin, View):
+    permission_required = [
+        'dashboard.change_jobcategory'
+    ]
+
+    template_name = 'dashboard/create_update_job_category.html'
+
+    @method_decorator(AdminsOnly)
+    def get(self, request, pk, *args, **kwargs):
+        category = JobCategory.objects.filter(id=pk).first()
+        context = {'category': category, 'head': 'Update'}
+        return render(request, self.template_name, context)
+
+    @method_decorator(AdminsOnly)
+    def post(self, request, pk, *args, **kwargs):
+        category = JobCategory.objects.filter(id=pk).first()
+        image = request.FILES.get('image')
+        form = UpdateJobCategoryForm(
+            request.POST, request.FILES or None, instance=category)
+        if form.is_valid():
+            form.save()
+            if image:
+                category.image = image
+                category.save()
+            messages.success(request, 'Job Category Updated Successfully!')
+            return redirect('dashboard:job_categories')
+        else:
+            messages.errror(request, 'Job Category Not Updated!')
+            return redirect('dashboard:job_categories')
+
+
+class DeleteJobCategoryView(PermissionRequiredMixin, View):
+    permission_required = [
+        'dashboard.delete_jobcategory'
+    ]
+
+    @method_decorator(AdminsOnly)
+    def get(self, request, *args, **kwargs):
+        return redirect('dashboard:job_categories')
+
+    @method_decorator(AdminsOnly)
+    def post(self, request, *args, **kwargs):
+        category_id = request.POST.get('category_id')
+        category = JobCategory.objects.filter(id=category_id).first()
+        category.delete()
+        messages.success(request, 'Job Category Deleted Successfully!')
+        return redirect('dashboard:job_categories')
+
+
+class JobCategoryListView(PermissionRequiredMixin, View):
+    permission_required = [
+        'dashboard.view_jobcategory'
+    ]
+    template_name = 'dashboard/job_categories.html'
+
+    @method_decorator(AdminsOnly)
+    def get(self, request, *args, **kwargs):
+        categories = JobCategory.objects.all().order_by('-id')
+        context = {'categories': categories}
+        return render(request, self.template_name, context)
+
+
+class PendingJobCategoryListView(PermissionRequiredMixin, View):
+    permission_required = [
+        'dashboard.view_jobcategory'
+    ]
+    template_name = 'dashboard/job_categories.html'
+
+    @method_decorator(AdminsOnly)
+    def get(self, request, *args, **kwargs):
+        categories = JobCategory.objects.filter(
+            published=False).order_by('-id')
+        context = {'categories': categories}
+        return render(request, self.template_name, context)
