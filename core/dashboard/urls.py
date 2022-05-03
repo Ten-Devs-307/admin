@@ -38,8 +38,19 @@ urlpatterns = [
     path('jobs-today/', views.JobsTodayView.as_view(), name='jobs_today'),
     path('completed-jobs/', views.CompletedJobsView.as_view(), name='completed_jobs'),
     path('pending-jobs/', views.PendingJobsView.as_view(), name='pending_jobs'),
+    path('delete-job/', views.DeleteJobView.as_view(), name='delete_job'),
 
     #     path('profile/', views.UserProfileView.as_view(), name='profile'),
     path('change-password/', views.ChangePasswordView.as_view(),
          name='change_password'),
+
+    path('create-job-category/', views.CreateJobCategoryView.as_view(),
+         name='create_job_category'),
+    path('update-job-category/<int:pk>/',
+         views.UpdateJobCategoryView.as_view(), name='update_job_category'),
+    path('delete-job-category/', views.DeleteJobCategoryView.as_view(),
+         name='delete_job_category'),
+
+     path('job-categories/', views.JobCategoryListView.as_view(), name='job_categories'),
+     path('pending-job-categories/', views.PendingJobCategoryListView.as_view(), name='pending_job_categories'),
 ]
