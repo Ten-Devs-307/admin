@@ -22,7 +22,8 @@ SECRET_KEY = env('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['rendar.herokuapp.com', '*']
+ALLOWED_HOSTS = ['rendar.herokuapp.com',
+                 '*', 'www.renderjobs.com', 'renderjobs.com']
 
 
 # Application definition
@@ -127,6 +128,10 @@ STATICFILES_DIRS = (
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+MEDIA_ROOT = BASE_DIR / 'media/'
+MEDIA_URL = '/media/'
+
+
 #  Add configuration for static files storage using whitenoise
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
@@ -150,6 +155,14 @@ REST_FRAMEWORK = {
         'knox.auth.TokenAuthentication',
     ]
 }
+
+
+'''This is for ssl redirection: http -> https'''
+# if os.getcwd() == '/core':
+#     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+#     SECURE_SSL_REDIRECT = True
+#     DEBUG = False
+
 
 prod_db = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(prod_db)
