@@ -154,3 +154,17 @@ class Transaction(models.Model):
             ('make_payment', 'Can Make Payment'),
             ('receive_payment', 'Can Receive Payment'),
         ]
+
+
+class JobCategory(models.Model):
+    title = models.CharField(max_length=100)
+    description = models.TextField(null=True, blank=True)
+    image = models.ImageField(
+        verbose_name="Category Image", upload_to="category/", null=True, blank=True)
+    published = models.BooleanField(default=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
