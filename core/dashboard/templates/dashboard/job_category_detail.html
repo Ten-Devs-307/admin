@@ -1,0 +1,95 @@
+{% extends 'dashboard/base.html' %}
+{% block pagetitle %} Job Category {% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mx-auto">
+        <!-- breadcrumb -->
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item"><a href="#">Category</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Category Detail</li>
+                </ol>
+            </nav>
+        </div>
+        <!-- end of breadcrumb -->
+
+        <div class="row">
+            <div class="col-md-12 col-lg-12 col-xl-10 card shadow mx-auto mt-2">
+
+                <div class="card-body">
+                    <h5 class="card-title">{{category.title}}</h5>
+                    <div class="row">
+                        <!-- <br> -->
+                        <div class="col-lg-4 col-md-12 mb-3 mb-lg-0">
+                            <div class="bg-image hover-overlay ripple shadow-1-strong rounded"
+                                data-ripple-color="light">
+                                <img src="{% if category.image %} {{category.image.url}} {% else %} {% static 'assets/img/faces/1.jpg' %} {% endif %} "
+                                    class="img-fluid" alt="" style="height: 100px; width: auto;">
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-12 mb-3 mb-lg-0">
+                            <b>Category Title</b>
+                            <p class="card-text m-0">{{category.title}}</p>
+                        </div>
+                        <div class="col-lg-4 col-md-12 mb-3 mb-lg-0">
+                            <b>Category ID</b>
+                            <p class="card-text m-0">{{category.id}}</p>
+                        </div>
+                        <div class="col-lg-4 col-md-12 mb-3 mb-lg-0">
+                            <b>Category Description</b>
+                            <p class="card-text m-0">{{category.description}}</p>
+                        </div>
+                        <div class="col-lg-4 col-md-12 mb-3 mb-lg-0">
+                            <b>Customer Published</b>
+                            <p class="card-text m-0">
+                                {% if category.published %}
+                                <span class="badge bg-success">Yes</span>
+                                {% else %}
+                                <span class="badge bg-danger">No</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-lg-4 col-md-12 mb-3 mb-lg-0">
+                            <b>Date Created</b>
+                            <p class="card-text m-0">{{category.created_at}}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <h5 class="card-title">Settings</h5>
+                    <div class="row">
+                        <div class="col-md-6 p-2">
+                            <div class="bg-white p-4">
+                                {% if perms.dashboard.change_jobcategory %}
+                                <h6>PUBLISHED STATUS</h6>
+                                <form action="" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="category_id" value="{{category.id}}">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="status" id="status"
+                                            value="approved" {% if category.published %}checked{% endif %}>
+                                        <label class="form-check-label" for="approved">Published</label>
+                                    </div>
+
+                                    <div class="form-check form-check-inline">
+                                        <button type="submit" class="btn btn-sm btn-primary"><i class="bi bi-save"></i>
+                                            Save</button>
+                                    </div>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

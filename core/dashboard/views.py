@@ -876,3 +876,29 @@ class PendingJobCategoryListView(PermissionRequiredMixin, View):
             published=False).order_by('-id')
         context = {'categories': categories}
         return render(request, self.template_name, context)
+
+
+class JobCategoryDetailsView(PermissionRequiredMixin, View):
+    template_name = 'dashboard/job_category_detail.html'
+    permission_required = [
+        'dashboard.view_jobcategory',
+        'dashboard.change_jobcategory',
+    ]
+
+    @method_decorator(AdminsOnly)
+    def get(self, request, pk, *args, **kwargs):
+        category = JobCategory.objects.filter(id=pk).first()
+        context = {'category':category}
+        return render(request, self.template_name, context)
+
+    @method_decorator(AdminsOnly)
+    def post(self, request, pk, *args, **kwargs):
+        category = JobCategory.objects.filter(id=pk).first()
+        published = True if request.POST.get('status') == S.APPROVED.value else False
+        category.published = published
+        category.save()
+        if published:
+            messages.success(request, 'Category Published Successfully!')
+        else:
+            messages.error(request, 'Category Unpublished Successfully!')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

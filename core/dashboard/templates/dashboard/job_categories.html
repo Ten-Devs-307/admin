@@ -74,7 +74,8 @@
                                         <div class="row justify-content-start">
                                             {% if perms.dashboard.view_jobcategory %}
                                             <div class="col-2  py-0">
-                                                <a href="" class="btn btn-sm btn-primary btn-sm "><span
+                                                <a href="{% url 'dashboard:job_category_detail' category.id %}"
+                                                    class="btn btn-sm btn-primary btn-sm "><span
                                                         class="bi bi-eye"></span></a>
                                             </div>
                                             {% endif %}
