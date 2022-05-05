@@ -9,14 +9,14 @@ from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from rest_framework import status
 from accounts.models import Account
-from dashboard.models import Product, Service, Transaction, Wallet
+from dashboard.models import JobCategory, Product, Service, Transaction, Wallet
 
 from .serializers import (AccountSerializer, ProductSerializer,
-                          RegisterSerializer, ServiceSerializer,
+                          RegisterSerializer, JobSerializer,
                           TransactionSerializer, UserSerializer,
-                          WalletSerializer)
+                          WalletSerializer, JobCategorySerializer)
 
 
 class APIOverView(View):
@@ -69,19 +69,27 @@ class ProductDetail(APIView):
         return Response(serializer.data)
 
 
-class ServiceList(APIView):
-
-    def get(self, request):
+class JobsList(APIView):
+    def get(self, request, *args, **kwargs):
         services = Service.objects.all()
-        serializer = ServiceSerializer(services, many=True)
+        serializer = JobSerializer(services, many=True)
         return Response(serializer.data)
 
+    def post(self, request, *args, **kwargs):
+        serializer = JobSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            serializer.customer = request.user
+            serializer.save()
+            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+        return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-class ServiceDetail(APIView):
+
+class JobDetail(APIView):
 
     def get(self, request, pk, *args, **kwargs):
         service = Service.objects.filter(id=pk).first()
-        serializer = ServiceSerializer(service, many=False)
+        serializer = JobSerializer(service, many=False)
         return Response(serializer.data)
 
 
@@ -115,6 +123,13 @@ class WalletDetail(APIView):
     def get(self, request, pk, *args, **kwargs):
         wallet = Wallet.objects.filter(id=pk).first()
         serializer = WalletSerializer(wallet, many=False)
+        return Response(serializer.data)
+
+
+class JobCategoryAPI(APIView):
+    def get(self, request, *args, **kwargs):
+        categories = JobCategory.objects.filter(published=True).order_by('-id')
+        serializer = JobCategorySerializer(categories, many=True)
         return Response(serializer.data)
 
 

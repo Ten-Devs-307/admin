@@ -10,7 +10,7 @@ app_name = 'api'
 urlpatterns = [
     path('sign-up/', APIViews.RegisterAPI.as_view(), name='sign_up'),
 
-     # knox login, logout
+    # knox login, logout
     path('login/', LoginAPI.as_view(), name='login'),
     path('logout/', knox_views.LogoutView.as_view(), name='logout'),
     path('logoutall/', knox_views.LogoutAllView.as_view(), name='logoutall'),
@@ -19,14 +19,17 @@ urlpatterns = [
     path('accounts/', APIViews.AccountList.as_view(), name='account_list'),
     path('products/', APIViews.ProductList.as_view(), name='product_list'),
     path('wallets/', APIViews.WalletList.as_view(), name='wallet_list'),
-    path('services/', APIViews.ServiceList.as_view(), name='service_list'),
+    path('jobs/', APIViews.JobsList.as_view(), name='jobs'),
     path('transactions/', APIViews.TransactionList.as_view(),
          name='transaction_list'),
+
+    path('job-categories/', APIViews.JobCategoryAPI.as_view(),
+         name='job_categories'),
 
     path('user/<int:pk>/', APIViews.AccountDetail.as_view(), name='user'),
     path('product/<int:pk>/', APIViews.ProductDetail.as_view(), name='product'),
     path('wallet/<int:pk>/', APIViews.WalletDetail.as_view(), name='wallet'),
-    path('service/<int:pk>/', APIViews.ServiceDetail.as_view(), name='service'),
+    path('job/<int:pk>/', APIViews.JobDetail.as_view(), name='service'),
     path('transaction/<int:pk>/',
          APIViews.TransactionDetail.as_view(), name='transaction'),
 

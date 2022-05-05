@@ -150,8 +150,7 @@ PAYHUB_SECRET_TOKEN = env('PAYHUB_SECRET_TOKEN')
 WALLET_ID = env('WALLET_ID')
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    'DEFAULT_AUTHENTICATION_CLASSES': [
         'knox.auth.TokenAuthentication',
     ]
 }

@@ -1,12 +1,13 @@
 import imp
 
 from django.contrib.auth import authenticate
+from core.util.constants import Status
 from rest_framework import serializers
 from rest_framework.response import Response
 
 from accounts.models import Account
 from dashboard.models import (Disbursement, Product, Service, Transaction,
-                              Wallet)
+                              Wallet, JobCategory)
 
 
 class AccountSerializer(serializers.ModelSerializer):
@@ -35,7 +36,7 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ServiceSerializer(serializers.ModelSerializer):
+class JobSerializer(serializers.ModelSerializer):
     class Meta:
         model = Service
         fields = "__all__"
@@ -60,7 +61,6 @@ class RegisterSerializer(serializers.ModelSerializer):
             name=validated_data['name'], email=validated_data['email'], password=validated_data['password'])
 
         return user
-
 
 
 class LoginSerializer(serializers.ModelSerializer):
@@ -106,3 +106,23 @@ class DisbursementSerializer(serializers.ModelSerializer):
         )
         disbursement.save()
         return disbursement
+
+
+class JobCategorySerializer(serializers.ModelSerializer):
+    # def generate_job_id():
+    #     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
+    # job_id = serializers.CharField(
+    #     max_length=12, default=generate_job_id(), unique=False)
+    # customer = serializers.ForeignKey(
+    #     'accounts.Account', on_delete=serializers.CASCADE, null=True, related_name='requested')
+    # labourer = serializers.ForeignKey(
+    #     'accounts.Account', on_delete=serializers.CASCADE, null=True, related_name='doer')
+    service_name = serializers.CharField(max_length=200)
+    service_description = serializers.CharField(
+        allow_null=True, allow_blank=True)
+    charge = serializers.DecimalField(max_digits=10, decimal_places=3)
+    mode_of_payment = serializers.CharField(max_length=20)
+
+    class Meta:
+        model = Service
+        fields = "__all__"
