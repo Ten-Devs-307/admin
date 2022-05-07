@@ -1,5 +1,6 @@
 import decimal
 import random
+from re import S
 import string
 import time
 import uuid
@@ -25,7 +26,8 @@ class Service(models.Model):
     mode_of_payment = models.CharField(max_length=20)
     status = models.CharField(max_length=20, default=Status.PENDING.value)
     published = models.BooleanField(default=False)
-    accepted = models.BooleanField(default=False)   # determines whether labourer has accepted...
+    # determines whether labourer has accepted...
+    accepted = models.BooleanField(default=False)
     date_of_service = models.DateTimeField(auto_now_add=True)
     date_of_completion = models.DateTimeField(auto_now=True)
 
@@ -127,20 +129,23 @@ class Transaction(models.Model):
     transaction_id = models.CharField(
         verbose_name="Wallet ID", max_length=50, default=generate_transaction_id)
     customer = models.ForeignKey(
-        'accounts.Account', on_delete=models.CASCADE, related_name='customer')
+        'accounts.Account', on_delete=models.CASCADE, related_name='customer', null=True, blank=True)
     network = models.CharField(max_length=20, default='MTN')
     from_phone = models.CharField(max_length=15, blank=True)
     labourer = models.ForeignKey(
-        'accounts.Account', on_delete=models.CASCADE, verbose_name="Labourer")
+        'accounts.Account', on_delete=models.CASCADE, verbose_name="Labourer", null=True, blank=True)
     amount = models.DecimalField(
         verbose_name="Amount", decimal_places=3, max_digits=10)
     payment_mode = models.CharField(
         verbose_name="Mode of Payment", default='MOMO', max_length=50)
-    service = models.CharField(verbose_name="Service Rendered", max_length=50)
+    service = models.CharField(
+        verbose_name="Service Rendered", max_length=50, null=True, blank=True)
+    job = models.ForeignKey(
+        Service, on_delete=models.CASCADE, null=True, blank=True)
     note = models.CharField(max_length=500, blank=True)
     wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, null=True)
     payment_status = models.CharField(
-        verbose_name="Payment Status", max_length=50)
+        verbose_name="Payment Status", max_length=50, default=Status.PENDING.value)
     payment_status_code = models.CharField(max_length=10, default='001')
     payment_date = models.DateTimeField(
         verbose_name="Payment date", auto_now_add=True)
