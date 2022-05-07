@@ -1,3 +1,4 @@
+from dataclasses import fields
 from django.contrib.auth import authenticate
 from core.util.constants import Status
 from rest_framework import serializers
@@ -112,10 +113,24 @@ class JobCategorySerializer(serializers.ModelSerializer):
         allow_null=True, allow_blank=True)
     charge = serializers.DecimalField(max_digits=10, decimal_places=3)
     mode_of_payment = serializers.CharField(max_length=20)
-    # get the requester
-    # customer = serializers.PrimaryKeyRelatedField(
-    #     read_only=True, default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Service
         fields = "__all__"
+
+
+class PaymentSerializer(serializers.ModelSerializer):
+    network = serializers.CharField(max_length=20, default='MTN')
+    from_phone = serializers.CharField(max_length=15, allow_blank=True)
+    amount = serializers.DecimalField(
+        decimal_places=3, max_digits=10)
+    payment_mode = serializers.CharField(
+        default='MOMO', max_length=50)
+    note = serializers.CharField(max_length=500, allow_blank=True)
+
+   
+
+    class Meta:
+        model = Transaction
+        fields = '__all__'
+        
