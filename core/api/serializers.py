@@ -1,5 +1,3 @@
-import imp
-
 from django.contrib.auth import authenticate
 from core.util.constants import Status
 from rest_framework import serializers
@@ -109,19 +107,14 @@ class DisbursementSerializer(serializers.ModelSerializer):
 
 
 class JobCategorySerializer(serializers.ModelSerializer):
-    # def generate_job_id():
-    #     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
-    # job_id = serializers.CharField(
-    #     max_length=12, default=generate_job_id(), unique=False)
-    # customer = serializers.ForeignKey(
-    #     'accounts.Account', on_delete=serializers.CASCADE, null=True, related_name='requested')
-    # labourer = serializers.ForeignKey(
-    #     'accounts.Account', on_delete=serializers.CASCADE, null=True, related_name='doer')
     service_name = serializers.CharField(max_length=200)
     service_description = serializers.CharField(
         allow_null=True, allow_blank=True)
     charge = serializers.DecimalField(max_digits=10, decimal_places=3)
     mode_of_payment = serializers.CharField(max_length=20)
+    # get the requester
+    # customer = serializers.PrimaryKeyRelatedField(
+    #     read_only=True, default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Service
