@@ -1,7 +1,9 @@
+import time
 from django.contrib.auth import login
-from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views import View
+from core import settings
+from core.util.util_functions import get_transaction_status, receive_payment
 from knox.models import AuthToken
 from knox.views import LoginView as KnoxLoginView
 from rest_framework import generics, permissions
@@ -14,7 +16,7 @@ from accounts.models import Account
 from dashboard.models import JobCategory, Product, Service, Transaction, Wallet
 
 from core.util.constants import Status as S
-from .serializers import (AccountSerializer, ProductSerializer,
+from .serializers import (AccountSerializer, PaymentSerializer, ProductSerializer,
                           RegisterSerializer, JobSerializer,
                           TransactionSerializer, UserSerializer,
                           WalletSerializer, JobCategorySerializer)
@@ -72,7 +74,7 @@ class ProductDetail(APIView):
 
 class JobsList(APIView):
     def get(self, request, *args, **kwargs):
-        services = Service.objects.all()
+        services = Service.objects.all().order_by('-id')
         serializer = JobSerializer(services, many=True)
         return Response(serializer.data)
 
@@ -127,8 +129,6 @@ class CancelJob(APIView):
 
 
 class JobDetail(APIView):
-    # def perform_create(self, serializer):
-    #     serializer.save(user=self.request.user)
 
     def get(self, request, pk, *args, **kwargs):
         service = Service.objects.filter(id=pk).first()
@@ -139,7 +139,7 @@ class JobDetail(APIView):
 class TransactionList(APIView):
 
     def get(self, request):
-        transactions = Transaction.objects.all()
+        transactions = Transaction.objects.all().order_by('-id')
         serializer = TransactionSerializer(transactions, many=True)
         return Response(serializer.data)
 
@@ -156,7 +156,7 @@ class TransactionDetail(generics.GenericAPIView):
 class WalletList(APIView):
 
     def get(self, request):
-        wallets = Wallet.objects.all()
+        wallets = Wallet.objects.all().order_by('-id')
         serializer = WalletSerializer(wallets, many=True)
         return Response(serializer.data)
 
@@ -199,3 +199,60 @@ class LoginAPI(KnoxLoginView):
         user = serializer.validated_data['user']
         login(request, user)
         return super(LoginAPI, self).post(request, format=None)
+
+
+class MakePaymentAPI(APIView):
+    def generate_transaction_id(self):
+        return int(round(time.time() * 1000))
+
+    def post(self, request, pk, *args, **kwargs):  # pk is for job
+        token_str = request.META.get('HTTP_AUTHORIZATION').split(' ')[1][0:8]
+        customer = AuthToken.objects.filter(
+            token_key=token_str).first().user
+        wallet = Wallet.objects.filter(holder=customer).first()
+        serializer = PaymentSerializer(data=request.data)
+        # get job in question
+        job = Service.objects.filter(id=pk).first()
+
+        if serializer.is_valid():
+            serializer.save(customer=customer, job=job)
+            transaction_id = self.generate_transaction_id()
+            data = {
+                'transaction_id': transaction_id,
+                'mobile_number': serializer['from_phone'].value,
+                'amount': serializer['amount'].value,
+                'wallet_id': settings.WALLET_ID,
+                'network_code': serializer['network'].value,
+                'note': 'Cashout',
+            }
+            # initiate payment
+            receive_payment(data)
+
+            for i in range(4):
+                time.sleep(5)
+                transaction_status = get_transaction_status(
+                    transaction_id)
+                if transaction_status['success'] == True:
+                    print('the transaction was successful')
+                    break
+
+            transaction = {
+                'transaction_id': transaction_id,
+                'amount': serializer['amount'].value,
+                'from_phone': serializer['from_phone'].value,
+                'network': serializer['network'].value,
+                'note': 'Payment',
+                'payment_status_code': transaction_status['status_code'],
+                'payment_status': transaction_status['message'],
+                'customer': customer,
+                'job': job,
+                'service': job.service_name,
+                'wallet': wallet,
+            }
+            print("Saving Transaction")
+            Transaction.objects.create(**transaction)
+            print('Transaction Saved')
+
+            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+        # if transaction is data is not valid
+        return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
