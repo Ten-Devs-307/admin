@@ -25,6 +25,7 @@ class Service(models.Model):
     mode_of_payment = models.CharField(max_length=20)
     status = models.CharField(max_length=20, default=Status.PENDING.value)
     published = models.BooleanField(default=False)
+    accepted = models.BooleanField(default=False)   # determines whether labourer has accepted...
     date_of_service = models.DateTimeField(auto_now_add=True)
     date_of_completion = models.DateTimeField(auto_now=True)
 
