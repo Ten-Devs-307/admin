@@ -583,6 +583,7 @@ class CashoutView(PermissionRequiredMixin, View):
                 wallet.save()
                 messages.success(request, 'Cashout Successful!')
                 # return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            # customer is not having enough balance
             elif decimal.Decimal(amount) > 0 and wallet.get_wallet_balance() < decimal.Decimal(amount):
                 messages.error(
                     request, "You don't have enough balance to cashout")
@@ -592,7 +593,7 @@ class CashoutView(PermissionRequiredMixin, View):
                 request, 'Something went wrong! Couldn\'t Cashout')
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-        response = make_payment(data)
+        # response = make_payment(data)
         transaction_status = get_transaction_status(transaction_id)
         '''NOTE: Remember to update the customer and labourer'''
         transaction = {
@@ -888,13 +889,14 @@ class JobCategoryDetailsView(PermissionRequiredMixin, View):
     @method_decorator(AdminsOnly)
     def get(self, request, pk, *args, **kwargs):
         category = JobCategory.objects.filter(id=pk).first()
-        context = {'category':category}
+        context = {'category': category}
         return render(request, self.template_name, context)
 
     @method_decorator(AdminsOnly)
     def post(self, request, pk, *args, **kwargs):
         category = JobCategory.objects.filter(id=pk).first()
-        published = True if request.POST.get('status') == S.APPROVED.value else False
+        published = True if request.POST.get(
+            'status') == S.APPROVED.value else False
         category.published = published
         category.save()
         if published:
@@ -902,3 +904,25 @@ class JobCategoryDetailsView(PermissionRequiredMixin, View):
         else:
             messages.error(request, 'Category Unpublished Successfully!')
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+class RecheckTransactionStatusView(PermissionRequiredMixin, View):
+    permission_required = [
+        'dashboard.view_transaction'
+    ]
+
+    def get(self, request, id, *args, **kwargs):
+        transaction = Transaction.objects.filter(transaction_id=id).first()
+        if transaction:
+            status = get_transaction_status(id)
+            if status:
+                transaction.payment_status_code = status['status_code']
+                transaction.payment_status = status['message']
+                transaction.save()
+                messages.success(
+                    request, f'Transaction {transaction.transaction_id} Status Updated Successfully!')
+            else:
+                messages.error(request, 'Transaction Status Not Updated!')
+        else:
+            messages.error(request, 'Transaction Not Found!')
+        return redirect('dashboard:transactions')
