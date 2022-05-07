@@ -10,6 +10,8 @@ urlpatterns = [
     path('receive-payment/', views.ReceivePaymentView.as_view(),
          name='receive_payment'),
     path('make-payment/', views.MakePaymentView.as_view(), name='make_payment'),
+    path('recheck-status/<str:id>/',
+         views.RecheckTransactionStatusView.as_view(), name='recheck_status'),
 
     path('customers/', views.CustomerListView.as_view(), name='customers'),
     path('customer-detail/<str:customer_id>/',
@@ -50,8 +52,11 @@ urlpatterns = [
          views.UpdateJobCategoryView.as_view(), name='update_job_category'),
     path('delete-job-category/', views.DeleteJobCategoryView.as_view(),
          name='delete_job_category'),
-     path('job-category-detail/<int:pk>/', views.JobCategoryDetailsView.as_view(), name='job_category_detail'),
+    path('job-category-detail/<int:pk>/',
+         views.JobCategoryDetailsView.as_view(), name='job_category_detail'),
 
-     path('job-categories/', views.JobCategoryListView.as_view(), name='job_categories'),
-     path('pending-job-categories/', views.PendingJobCategoryListView.as_view(), name='pending_job_categories'),
+    path('job-categories/', views.JobCategoryListView.as_view(),
+         name='job_categories'),
+    path('pending-job-categories/', views.PendingJobCategoryListView.as_view(),
+         name='pending_job_categories'),
 ]
