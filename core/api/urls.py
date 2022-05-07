@@ -29,6 +29,9 @@ urlpatterns = [
          APIViews.AcceptDeclineJob.as_view(), name='accept_decline_job'),
     path('cancel-job/<int:pk>/', APIViews.CancelJob.as_view(), name='cancel_job'),
 
+    path('make-payment/<int:pk>/',
+         APIViews.MakePaymentAPI.as_view(), name='make_payment'),
+
     path('user/<int:pk>/', APIViews.AccountDetail.as_view(), name='user'),
     path('product/<int:pk>/', APIViews.ProductDetail.as_view(), name='product'),
     path('wallet/<int:pk>/', APIViews.WalletDetail.as_view(), name='wallet'),
