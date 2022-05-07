@@ -40,7 +40,7 @@ def receive_payment(data):
 
     response = requests.post(ENDPOINT, data=data, headers=headers)
     response_data = response.json()
-    print(response_data)
+    print('From receive_payment', response_data)
     return response_data
 
 
@@ -54,4 +54,5 @@ def get_transaction_status(transaction_id):
     }
     response = requests.get(ENDPOINT, params=params, headers=headers)
     response_data = response.json()
+    print('From get_transaction_status: ', response_data)
     return response_data
