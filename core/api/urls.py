@@ -25,6 +25,9 @@ urlpatterns = [
 
     path('job-categories/', APIViews.JobCategoryAPI.as_view(),
          name='job_categories'),
+    path('accept-decline-job/<int:pk>/',
+         APIViews.AcceptDeclineJob.as_view(), name='accept_decline_job'),
+    path('cancel-job/<int:pk>/', APIViews.CancelJob.as_view(), name='cancel_job'),
 
     path('user/<int:pk>/', APIViews.AccountDetail.as_view(), name='user'),
     path('product/<int:pk>/', APIViews.ProductDetail.as_view(), name='product'),
