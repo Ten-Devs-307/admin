@@ -48,6 +48,7 @@
                                     <th scope="col">Amount</th>
                                     <th scope="col">Status</th>
                                     <th scope="col">Published</th>
+                                    <th scope="col">Accepted</th>
                                     <th scope="col">Date Created</th>
                                     <th scope="col">Action</th>
                                 </tr>
@@ -73,6 +74,13 @@
                                     </td>
                                     <td>
                                         {% if job.is_published %}
+                                        <span class="badge bg-success">Yes</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">No</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if job.accepted %}
                                         <span class="badge bg-success">Yes</span>
                                         {% else %}
                                         <span class="badge bg-danger">No</span>
