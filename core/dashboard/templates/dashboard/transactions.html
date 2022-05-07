@@ -88,13 +88,13 @@
                                     <td>{{transaction.service}}</td>
                                     <td>{{transaction.wallet.wallet_id}}</td>
                                     <td>
-                                        {% if transaction.payment_status == '000' %} <span
+                                        {% if transaction.payment_status_code == '000' %} <span
                                             class="p-1 badge bg-success">Successful</span>
-                                        {% elif transaction.payment_status == '107'%}
+                                        {% elif transaction.payment_status_code == '107'%}
                                         <span class="p-1 badge bg-danger">Failed</span>
                                         {% else %}
                                         <span class="p-1 badge bg-warning">Pending</span>
-                                        <a href="javascript:void(0)"
+                                        <a href="{% url 'dashboard:recheck_status' transaction.transaction_id %}"
                                             class="mt-1 p-1 cursor-pointer btn btn-primary btn-sm">Recheck</a>
                                         {% endif %}
                                     </td>
