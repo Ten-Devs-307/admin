@@ -13,6 +13,7 @@ from rest_framework import status
 from accounts.models import Account
 from dashboard.models import JobCategory, Product, Service, Transaction, Wallet
 
+from core.util.constants import Status as S
 from .serializers import (AccountSerializer, ProductSerializer,
                           RegisterSerializer, JobSerializer,
                           TransactionSerializer, UserSerializer,
@@ -76,16 +77,58 @@ class JobsList(APIView):
         return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
+        '''Use the post method to save upload data'''
+        '''Get token from request, substring token to get token key, use token key to get user'''
+        token_str = request.META.get('HTTP_AUTHORIZATION').split(' ')[1][0:8]
+        customer = AuthToken.objects.filter(
+            token_key=token_str).first().user
         serializer = JobSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            serializer.customer = request.user
-            serializer.save()
+            serializer.save(customer=customer)
             return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
         return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class AcceptDeclineJob(APIView):
+    def post(self, request, pk, *args, **kwargs):
+        job = Service.objects.filter(id=pk).first()
+        status = True if request.data.get(
+            'status') == S.ACCEPTED.value else False
+
+        job.accepted = status
+        if status:
+            token_str = request.META.get(
+                'HTTP_AUTHORIZATION').split(' ')[1][0:8]
+            labourer = AuthToken.objects.filter(
+                token_key=token_str).first().user
+            job.labourer = labourer
+            job.save()
+            return Response({"status": "success", "data": JobSerializer(job, many=False).data})
+        else:
+            '''If job is declined, set labourer to null'''
+            job.labourer = None
+            job.save()
+            return Response({"status": "success", "data": JobSerializer(job, many=False).data})
+
+
+class CancelJob(APIView):
+    def post(self, request, pk, *args, **kwargs):
+        token_str = request.META.get('HTTP_AUTHORIZATION').split(' ')[1][0:8]
+        customer = AuthToken.objects.filter(
+            token_key=token_str).first().user
+        job = Service.objects.filter(id=pk, customer=customer).first()
+        '''Only allow cancellation of jobs when it hasnt been accepted by any labourer'''
+        if job.accepted and job.labourer:
+            return Response({"status": "failed", "reason": "Job is already accepted by labourer"}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            job.status = S.CANCELLED.value
+            job.save()
+            return Response({"status": "success", "reason": "Job Cancelled Successfully"})
+
+
 class JobDetail(APIView):
+    # def perform_create(self, serializer):
+    #     serializer.save(user=self.request.user)
 
     def get(self, request, pk, *args, **kwargs):
         service = Service.objects.filter(id=pk).first()
