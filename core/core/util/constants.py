@@ -10,6 +10,7 @@ class Status(Enum):
     PROCESSING = 'processing'
     COMPLETED = 'completed'
     CANCELLED = 'cancelled'
+    CONFIRMED = 'confirmed'
     SUCCESSFUL = 'successful'
     FAILED = 'failed'
 
