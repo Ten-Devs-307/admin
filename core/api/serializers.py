@@ -108,11 +108,14 @@ class DisbursementSerializer(serializers.ModelSerializer):
 
 
 class JobCategorySerializer(serializers.ModelSerializer):
-    service_name = serializers.CharField(max_length=200)
+    service_name = serializers.CharField(
+        max_length=200, allow_blank=True, allow_null=True)
     service_description = serializers.CharField(
         allow_null=True, allow_blank=True)
-    charge = serializers.DecimalField(max_digits=10, decimal_places=3)
-    mode_of_payment = serializers.CharField(max_length=20)
+    charge = serializers.DecimalField(
+        max_digits=10, decimal_places=3, allow_null=True)
+    mode_of_payment = serializers.CharField(
+        max_length=20, allow_null=True, allow_blank=True)
 
     class Meta:
         model = Service
@@ -128,9 +131,6 @@ class PaymentSerializer(serializers.ModelSerializer):
         default='MOMO', max_length=50)
     note = serializers.CharField(max_length=500, allow_blank=True)
 
-   
-
     class Meta:
         model = Transaction
         fields = '__all__'
-        

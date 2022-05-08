@@ -20,10 +20,11 @@ class Service(models.Model):
         'accounts.Account', on_delete=models.CASCADE, null=True, related_name='requested')
     labourer = models.ForeignKey(
         'accounts.Account', on_delete=models.CASCADE, null=True, related_name='doer')
-    service_name = models.CharField(max_length=200)
+    service_name = models.CharField(max_length=200, null=True, blank=True)
     service_description = models.TextField(null=True, blank=True)
-    charge = models.DecimalField(max_digits=10, decimal_places=3)
-    mode_of_payment = models.CharField(max_length=20)
+    charge = models.DecimalField(
+        max_digits=10, decimal_places=3, null=True, blank=True)
+    mode_of_payment = models.CharField(max_length=20, null=True, blank=True)
     status = models.CharField(max_length=20, default=Status.PENDING.value)
     published = models.BooleanField(default=False)
     # determines whether labourer has accepted...
