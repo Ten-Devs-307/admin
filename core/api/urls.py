@@ -32,6 +32,8 @@ urlpatterns = [
          APIViews.CompleteJobAPI.as_view(), name='complete_job'),
     path('confirm-job-completion/<int:pk>/',
          APIViews.ConfirmJobCompletionAPI.as_view(), name='confirm_job_completion'),
+    path('my-jobs-created/', APIViews.MyJobsCreatedAPI.as_view(),
+         name='my_jobs_created'),
 
     path('make-payment/<int:pk>/',
          APIViews.MakePaymentAPI.as_view(), name='make_payment'),

@@ -91,6 +91,25 @@ class JobsList(APIView):
         return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class MyJobsCreatedAPI(APIView):
+    '''For customers to get all the jobs they've created'''
+
+    def get(self, request, *args, **kwargs):
+        try:
+            token_str = request.META.get(
+                'HTTP_AUTHORIZATION').split(' ')[1][0:8]
+        except AttributeError:
+            return Response({"status": "error", "data": "Token not found"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            customer = AuthToken.objects.filter(
+                token_key=token_str).first().user
+        except:
+            return Response({"status": "error", "data": "Customer Account Not Found"}, status=status.HTTP_400_BAD_REQUEST)
+        services = Service.objects.filter(customer=customer).order_by('-id')
+        serializer = JobSerializer(services, many=True)
+        return Response(serializer.data)
+
+
 class AcceptDeclineJob(APIView):
     '''For labourer to accept or decline job'''
 
