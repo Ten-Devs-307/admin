@@ -28,6 +28,10 @@ urlpatterns = [
     path('accept-decline-job/<int:pk>/',
          APIViews.AcceptDeclineJob.as_view(), name='accept_decline_job'),
     path('cancel-job/<int:pk>/', APIViews.CancelJob.as_view(), name='cancel_job'),
+    path('complete-job/<int:pk>/',
+         APIViews.CompleteJobAPI.as_view(), name='complete_job'),
+    path('confirm-job-completion/<int:pk>/',
+         APIViews.ConfirmJobCompletionAPI.as_view(), name='confirm_job_completion'),
 
     path('make-payment/<int:pk>/',
          APIViews.MakePaymentAPI.as_view(), name='make_payment'),
