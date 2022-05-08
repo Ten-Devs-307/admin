@@ -92,15 +92,21 @@ class JobsList(APIView):
 
 
 class AcceptDeclineJob(APIView):
+    '''For labourer to accept or decline job'''
+
     def post(self, request, pk, *args, **kwargs):
         job = Service.objects.filter(id=pk).first()
-        status = True if request.data.get(
+        job_status = True if request.data.get(
             'status') == S.ACCEPTED.value else False
 
-        job.accepted = status
-        if status:
-            token_str = request.META.get(
-                'HTTP_AUTHORIZATION').split(' ')[1][0:8]
+        job.accepted = job_status
+        if job_status:
+            '''Check if user used token authentication'''
+            try:
+                token_str = request.META.get(
+                    'HTTP_AUTHORIZATION').split(' ')[1][0:8]
+            except AttributeError:
+                return Response({"status": "error", "data": "Token not found"}, status=status.HTTP_400_BAD_REQUEST)
             labourer = AuthToken.objects.filter(
                 token_key=token_str).first().user
             job.labourer = labourer
@@ -114,6 +120,8 @@ class AcceptDeclineJob(APIView):
 
 
 class CancelJob(APIView):
+    '''For customer to cancel job'''
+
     def post(self, request, pk, *args, **kwargs):
         token_str = request.META.get('HTTP_AUTHORIZATION').split(' ')[1][0:8]
         customer = AuthToken.objects.filter(
@@ -126,6 +134,48 @@ class CancelJob(APIView):
             job.status = S.CANCELLED.value
             job.save()
             return Response({"status": "success", "reason": "Job Cancelled Successfully"})
+
+
+class CompleteJobAPI(APIView):
+    '''For labourer to mark job as completed'''
+
+    def post(self, request, pk, *args, **kwargs):
+        token_str = request.META.get('HTTP_AUTHORIZATION').split(' ')[1][0:8]
+        labourer = AuthToken.objects.filter(
+            token_key=token_str).first().user
+        job = Service.objects.filter(
+            id=pk, labourer=labourer, accepted=True).first()
+        job_status = request.data.get('status')
+        if job:
+            if job_status == S.COMPLETED.value:
+                job.status = S.COMPLETED.value
+                job.save()
+                return Response({"status": "success", "reason": "Job Completed Successfully"})
+            else:
+                return Response({"status": "failed", "reason": "Something went wrong, Couldn't complete job."}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"status": "failed", "reason": "Job not found."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ConfirmJobCompletionAPI(APIView):
+    '''For customer to confirm that labourer has completed the job'''
+
+    def post(self, request, pk, *args, **kwargs):
+        token_str = request.META.get('HTTP_AUTHORIZATION').split(' ')[1][0:8]
+        customer = AuthToken.objects.filter(
+            token_key=token_str).first().user
+        job = Service.objects.filter(
+            id=pk, customer=customer, accepted=True).first()
+        job_status = True if request.data.get(
+            'status') == S.CONFIRMED.value else False
+        if job:
+            if job_status:
+                job.completion_confirmed = job_status
+                job.save()
+                return Response({"status": "success", "reason": "Job Completion Confirmed Successfully"})
+            return Response({"status": "error", "reason": "Job Completion Not Confirmed"})
+        else:
+            return Response({"status": "failed", "reason": "Job not found."}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class JobDetail(APIView):
