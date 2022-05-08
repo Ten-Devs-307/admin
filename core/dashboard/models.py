@@ -28,6 +28,7 @@ class Service(models.Model):
     published = models.BooleanField(default=False)
     # determines whether labourer has accepted...
     accepted = models.BooleanField(default=False)
+    completion_confirmed = models.BooleanField(default=False)
     date_of_service = models.DateTimeField(auto_now_add=True)
     date_of_completion = models.DateTimeField(auto_now=True)
 
