@@ -47,6 +47,8 @@
                                     <th scope="col">Job</th>
                                     <th scope="col">Amount</th>
                                     <th scope="col">Status</th>
+                                    <th scope="col">Published</th>
+                                    <th scope="col">Accepted</th>
                                     <th scope="col">Date Created</th>
                                     <th scope="col">Action</th>
                                 </tr>
@@ -63,6 +65,20 @@
                                     <td>₵ {{job.charge}}</td>
                                     <td>
                                         <span class="badge bg-secondary">{{job.status}}</span>
+                                    </td>
+                                    <td>
+                                        {% if job.is_published %}
+                                        <span class="badge bg-success">Yes</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">No</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if job.accepted %}
+                                        <span class="badge bg-success">Yes</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">No</span>
+                                        {% endif %}
                                     </td>
                                     <td>{{job.date_of_service}}</td>
                                     <td>
@@ -82,8 +98,7 @@
                                             {% endif %}
 
                                             {% if perms.dashboard.delete_service %}
-                                            <form action="" method="POST"
-                                                data-message="Permanently delete this Job?"
+                                            <form action="" method="POST" data-message="Permanently delete this Job?"
                                                 class="deletion-forms col-2 py-0">
                                                 {% csrf_token %}
                                                 <input type="hidden" value="{{job.id}}" name="job_id" id="job_id">
