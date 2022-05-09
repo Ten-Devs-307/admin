@@ -24,10 +24,10 @@ class Service(models.Model):
     service_description = models.TextField(null=True, blank=True)
     charge = models.DecimalField(
         max_digits=10, decimal_places=3, null=True, blank=True)
-    mode_of_payment = models.CharField(max_length=20, null=True, blank=True)
+    location = models.CharField(max_length=200, null=True, blank=True)
+    mode_of_payment = models.CharField(max_length=20, default='MOMO')
     status = models.CharField(max_length=20, default=Status.PENDING.value)
     published = models.BooleanField(default=False)
-    # determines whether labourer has accepted...
     accepted = models.BooleanField(default=False)
     completion_confirmed = models.BooleanField(default=False)
     date_of_service = models.DateTimeField(auto_now_add=True)

@@ -29,13 +29,8 @@ class APIOverView(View):
         api_urls = {
             'Login': '/api/login/',
             'Logout': '/api/logout/',
-            'User': '/api/user/',
-            'UserList': '/api/user-list/',
-            'UserDetail': '/api/user-detail/<str:pk>/',
-            'UserCreate': '/api/user-create/',
-            'UserUpdate': '/api/user-update/<str:pk>/',
-            'UserDelete': '/api/user-delete/<str:pk>/',
-            'UserPassword': '/api/user-password/<str:pk>/',
+            'Accounts': '/api/accounts/',
+            'user': '/api/user/<int:pk>/',
         }
         return Response(api_urls)
 
@@ -78,8 +73,9 @@ class JobsList(APIView):
         serializer = JobSerializer(services, many=True)
         return Response(serializer.data)
 
+class CreateJobAPI(APIView):
+    '''For customers to create jobs'''
     def post(self, request, *args, **kwargs):
-        '''Use the post method to save upload data'''
         '''Get token from request, substring token to get token key, use token key to get user'''
         token_str = request.META.get('HTTP_AUTHORIZATION').split(' ')[1][0:8]
         customer = AuthToken.objects.filter(

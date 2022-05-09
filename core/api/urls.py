@@ -22,7 +22,7 @@ urlpatterns = [
     path('jobs/', APIViews.JobsList.as_view(), name='jobs'),
     path('transactions/', APIViews.TransactionList.as_view(),
          name='transaction_list'),
-
+    path('create-job/', APIViews.CreateJobAPI.as_view(), name='create_job'),
     path('job-categories/', APIViews.JobCategoryAPI.as_view(),
          name='job_categories'),
     path('accept-decline-job/<int:pk>/',

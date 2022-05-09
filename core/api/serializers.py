@@ -41,6 +41,21 @@ class JobSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class CreateJobSerializer(serializers.ModelSerializer):
+    service_name = serializers.CharField(
+        max_length=200, allow_null=True, allow_blank=True)
+    service_description = serializers.CharField(
+        allow_null=True, allow_blank=True)
+    charge = serializers.DecimalField(
+        max_digits=10, decimal_places=3, allow_null=True)
+    location = serializers.CharField(
+        max_length=200, allow_null=True, allow_blank=True)
+
+    class Meta:
+        model = Service
+        fields = "__all__"
+
+
 # User Serializer
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -108,17 +123,8 @@ class DisbursementSerializer(serializers.ModelSerializer):
 
 
 class JobCategorySerializer(serializers.ModelSerializer):
-    service_name = serializers.CharField(
-        max_length=200, allow_blank=True, allow_null=True)
-    service_description = serializers.CharField(
-        allow_null=True, allow_blank=True)
-    charge = serializers.DecimalField(
-        max_digits=10, decimal_places=3, allow_null=True)
-    mode_of_payment = serializers.CharField(
-        max_length=20, allow_null=True, allow_blank=True)
-
     class Meta:
-        model = Service
+        model = JobCategory
         fields = "__all__"
 
 
