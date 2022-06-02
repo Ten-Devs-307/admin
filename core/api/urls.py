@@ -36,10 +36,12 @@ urlpatterns = [
          name='my_jobs_created'),
     path('my-jobs-rendered/', APIViews.MyJobsRenderedAPI.as_view(),
          name='my_jobs_rendered'),
+    path('register-labourer/', APIViews.RegisterAsLabourerAPI.as_view(),
+         name='register_labourer'),
 
     path('make-payment/<int:pk>/',
          APIViews.MakePaymentAPI.as_view(), name='make_payment'),
-
+    path('user-profile/', APIViews.UserProfileAPI.as_view(), name='user_prodile'),
     path('user/<int:pk>/', APIViews.AccountDetail.as_view(), name='user'),
     path('product/<int:pk>/', APIViews.ProductDetail.as_view(), name='product'),
     path('wallet/<int:pk>/', APIViews.WalletDetail.as_view(), name='wallet'),

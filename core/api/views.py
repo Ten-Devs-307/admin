@@ -73,8 +73,10 @@ class JobsList(APIView):
         serializer = JobSerializer(services, many=True)
         return Response(serializer.data)
 
+
 class CreateJobAPI(APIView):
     '''For customers to create jobs'''
+
     def post(self, request, *args, **kwargs):
         '''Get token from request, substring token to get token key, use token key to get user'''
         token_str = request.META.get('HTTP_AUTHORIZATION').split(' ')[1][0:8]
@@ -85,6 +87,17 @@ class CreateJobAPI(APIView):
             serializer.save(customer=customer)
             return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
         return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserProfileAPI(APIView):
+    '''API endpoint to get user profile'''
+
+    def get(self, request, *args, **kwargs):
+        token_str = request.META.get('HTTP_AUTHORIZATION').split(' ')[1][0:8]
+        user = AuthToken.objects.filter(
+            token_key=token_str).first().user
+        serializer = AccountSerializer(user, many=False)
+        return Response({"user": serializer.data})
 
 
 class MyJobsCreatedAPI(APIView):
@@ -269,6 +282,23 @@ class RegisterAPI(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
+        return Response({
+            "user": UserSerializer(user, context=self.get_serializer_context()).data,
+            "token": AuthToken.objects.create(user)[1]
+        })
+
+
+class RegisterAsLabourerAPI(generics.GenericAPIView):
+    permission_classes = [permissions.AllowAny]
+    serializer_class = RegisterSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        user.is_labourer = True
+        user.is_customer = False
+        user.save()
         return Response({
             "user": UserSerializer(user, context=self.get_serializer_context()).data,
             "token": AuthToken.objects.create(user)[1]
