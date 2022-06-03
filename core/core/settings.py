@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'cloudinary_storage',
     'django.contrib.staticfiles',
 
     'accounts.apps.AccountsConfig',
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'knox',
+    'cloudinary',
 ]
 
 MIDDLEWARE = [
@@ -162,6 +164,14 @@ REST_FRAMEWORK = {
 #     SECURE_SSL_REDIRECT = True
 #     DEBUG = False
 
+
+# CLOUDINARY SETTUP
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'hrr16az2c',
+    'API_KEY': '215712845645894',
+    'API_SECRET': 'l8cLCCp7_NSTC5TM0pLNFIc7G_0',
+}
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 prod_db = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(prod_db)
