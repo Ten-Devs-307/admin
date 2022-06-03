@@ -20,3 +20,39 @@ Now that you have created a virtual environment and installed our dependencies, 
 2. turn on the virtual environment with Scripts/activate
 3. navigate back to the the base directory of the project.
 4. run the server using python manage.py runserver
+
+# INDIVIDUAL CONTRIBUTION PRESENTATION LINKS
+ADWOA ABREFI MENSAH
+```
+https://www.loom.com/share/3cff3a94b43d45348d45958264b9ae43
+
+```
+EMMA OSEI BONSU
+https://www.loom.com/share/a6b7b935a4774fcf91dbfc0cde5a883d
+
+
+BERNICE AKUSIKA DULEMORDZI
+https://www.loom.com/share/6b55770339de4e6380bc13d82b514c9b
+
+
+ANGELA AMENGOR-KWAPONG
+https://www.loom.com/share/1ed710ef6b5143c8b8434d0b89c3518e
+
+
+PRINCE KYEREMANTENG SAMUEL
+https://www.loom.com/share/713cc27f6e5b4b78990b6c88c64ea56a
+
+
+JONATHAN KOFI DONKOR
+https://www.loom.com/share/53dd8473b57d4370a38fd439065f8db5
+
+
+PRINCE OFORI
+https://www.loom.com/share/4525b2cdb6d34a588df771bfe5f4de91
+
+
+ASARE HARRISON
+https://www.loom.com/share/8cc0e6b1499e48fabb3ee960cc74e9e8
+
+APPIEDU BERNARD KUFFUOR
+https://www.loom.com/share/199e6a2d095a4b9e9365402f93ea7d58
