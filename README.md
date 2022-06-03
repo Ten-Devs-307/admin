@@ -3,8 +3,8 @@ This is the core of the 'Unskilled Labour Project'.
 It contains the Admin Dashboard, Database Models, APIs and Authentication APIs, and the core backend processes.
 
 # URLS AND CREDENTIALS
-1. Site Url: http://www.renderjobs.com/ (email: render@gmail.com, password: 12345)
-2. API Url: http://www.renderjobs.com/api/ (email: render@gmail.com, password: 12345)
+1. Site Url: ```http://www.renderjobs.com/ (email: render@gmail.com, password: 12345)```
+2. API Url: ```http://www.renderjobs.com/api/ (email: render@gmail.com, password: 12345)```
 3. API Documentation URL: https://documenter.getpostman.com/view/16990878/Uz5GmaeW
 4. trello: https://trello.com/b/Uqgvkz03/unskilled-labour (email: tendevs307@gmail.com, password: Devs10307)
 5. google docs: https://docs.google.com/document/d/1sHJggeO2gJhxBgDMDodmW4c619m2smb0EY164aCpCdo/edit?usp=sharing (email: tendevs307@gmail.com, password: Devs10307)
